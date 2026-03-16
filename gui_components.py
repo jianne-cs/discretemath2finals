@@ -1,12 +1,10 @@
 # gui_components.py
-# Main GUI application class with improved structure
-# At the top of gui_components.py, update the import to:
-from quest_system import CharacterQuestSystem, WindowManager, UIBuilder, PuzzleManager, QuestStatus, QuestStatusInfo
+# Main GUI application class with centered 16 Gates of Truth
+
 import tkinter as tk
-from tkinter import ttk, font
+from tkinter import ttk, messagebox, font
 import random
 from datetime import datetime
-from typing import Dict, List, Any, Optional
 
 from config import COLORS
 from tutorial import LogicTutorial
@@ -256,39 +254,123 @@ class SongsData:
     def __init__(self):
         self.songs = [
             {
+                'title': 'Mas?uerade Rhapsody Re?uest',
+                'operation': 'AND',
+                'meaning': 'Both masks and reality must be true',
+                'color': '#8B0000',
+                'lyric': "In this masquerade, only when both hearts beat as one..."
+            },
+            {
+                'title': 'Kuro no Birthday',
+                'operation': 'OR',
+                'meaning': 'Darkness or birth - at least one must be true',
+                'color': '#2D1B1B',
+                'lyric': "A birthday in darkness, where shadows or light may prevail..."
+            },
+            {
+                'title': 'Symbol I : Δ',
+                'operation': 'XOR',
+                'meaning': 'The symbol changes - exactly one interpretation',
+                'color': '#4A2C2C',
+                'lyric': "Delta of change, where exactly one path reveals truth..."
+            },
+            {
+                'title': 'Ave Mujica',
+                'operation': 'NAND',
+                'meaning': 'The band\'s anthem - not all is as it seems',
+                'color': '#5C3A3A',
+                'lyric': "We are not merely what you see before you..."
+            },
+            {
                 'title': 'Gehaburn',
                 'operation': 'Implication',
                 'meaning': 'If you burn, then you must feel the pain',
-                'color': '#8B0000',
+                'color': '#6B4C4C',
                 'lyric': "If the flame consumes, then despair follows..."
             },
             {
                 'title': 'Angles',
-                'operation': 'XOR',
+                'operation': 'XNOR',
                 'meaning': 'Angels exist if and only if we believe',
-                'color': '#4A2C2C',
+                'color': '#7A5D5D',
                 'lyric': "Heaven and earth are one and the same..."
             },
             {
+                'title': 'Fascination',
+                'operation': 'NOR',
+                'meaning': 'Neither logic nor emotion can explain fascination',
+                'color': '#342323',
+                'lyric': "Neither reason nor passion holds sway here..."
+            },
+            {
+                'title': 'Kizuna Music ???',
+                'operation': 'Converse Implication',
+                'meaning': 'Bonds of music when Q implies P',
+                'color': '#8B6B6B',
+                'lyric': "If the music binds us, then our hearts must be true..."
+            },
+            {
                 'title': 'Imprisoned',
-                'operation': 'Negation',
-                'meaning': 'Freedom found within acceptance',
-                'color': '#2D1B1B',
-                'lyric': "I am not who they want me to be..."
+                'operation': 'Contradiction',
+                'meaning': 'Freedom is impossible - always false',
+                'color': '#1A1A1A',
+                'lyric': "No escape, no truth, only endless chains..."
+            },
+            {
+                'title': "Choir 'S' Choir",
+                'operation': 'Projection P',
+                'meaning': 'The choir sings only of P',
+                'color': '#5D4A4A',
+                'lyric': "Voices rise, singing only of what was..."
+            },
+            {
+                'title': 'Nihilist',
+                'operation': 'Tautology',
+                'meaning': 'Nothing matters - always true',
+                'color': '#2C2C2C',
+                'lyric': "In emptiness, all truths are one..."
+            },
+            {
+                'title': 'Jiku: no Mosaik',
+                'operation': 'Projection Q',
+                'meaning': 'Time\'s mosaic depends only on Q',
+                'color': '#4D3939',
+                'lyric': "The pattern of time reveals itself through one lens..."
             },
             {
                 'title': 'Viking',
-                'operation': 'NOR',
-                'meaning': 'The journey of finding home',
-                'color': '#5C3A3A',
-                'lyric': "If I belong to nothing, nothing can reject me..."
+                'operation': 'Converse Nonimplication',
+                'meaning': 'The voyage takes only when Q without P',
+                'color': '#3B2F2F',
+                'lyric': "Sails unfurl only when the wind blows without warning..."
             },
             {
-                'title': 'Fascination',
-                'operation': 'NAND',
-                'meaning': 'Self-discovery beyond validation',
-                'color': '#6B4C4C',
-                'lyric': "I only feel real when I'm seen AND approved..."
+                'title': 'Tsubomi no Melody',
+                'operation': 'Material Nonimplication',
+                'meaning': 'The bud\'s melody blooms only when P without Q',
+                'color': '#6A4E4E',
+                'lyric': "The flower opens only when conditions are pure..."
+            },
+            {
+                'title': 'Haruhii no Uso',
+                'operation': 'Negation of P',
+                'meaning': 'Spring\'s lies deny P',
+                'color': '#8C6D6D',
+                'lyric': "Deceptions bloom when truth is denied..."
+            },
+            {
+                'title': 'Vampire no Yuuutsu',
+                'operation': 'Negation of Q',
+                'meaning': 'The vampire\'s melancholy denies Q',
+                'color': '#240F0F',
+                'lyric': "In eternal night, consequence is denied..."
+            },
+            {
+                'title': 'Koukai no Nai Uso',
+                'operation': 'Tautology',
+                'meaning': 'Lies without regret are always true',
+                'color': '#3E2323',
+                'lyric': "Falsehoods without remorse, eternally true..."
             }
         ]
     
@@ -321,6 +403,12 @@ class QuizManager:
         self.truth_display = None
         self.operation_label = None
         self.options_frame = None
+        self.submit_btn = None
+        self.status_icon = None
+        self.status_message = None
+        self.option_buttons = []
+        self.songs_container = None
+        self.song_cards = []
     
     def new_quiz(self):
         """Start a new quiz round"""
@@ -338,18 +426,33 @@ class QuizManager:
                             if op['name'] not in unlocked_operations]
             
             if available_ops:
-                self.current_operation_index = random.randint(0, len(available_ops) - 1)
-                current_op = available_ops[self.current_operation_index]
+                self.current_operation_index = self.parent.logical_operations.index(
+                    random.choice(available_ops)
+                )
             else:
                 self.current_operation_index = random.randint(
                     0, len(self.parent.logical_operations) - 1
                 )
-                current_op = self.parent.logical_operations[self.current_operation_index]
             
-            self.display_current_truth_table(current_op)
+            self.display_current_truth_table()
+            self.answer_submitted = False
+            
+            # Reset button highlights
+            for btn_info in self.option_buttons:
+                btn_info['button'].config(bg=COLORS['option_button'])
+            
+            if hasattr(self, 'selected_button'):
+                self.selected_button = None
+            
+            if self.submit_btn:
+                self.submit_btn.config(state=tk.DISABLED, bg=COLORS['deep_red'])
+            if self.status_icon:
+                self.status_icon.config(text="", bg=COLORS['ebony'])
+            if self.status_message:
+                self.status_message.config(text="", bg=COLORS['ebony'])
     
-    def display_current_truth_table(self, operation):
-        """Display current truth table for quiz"""
+    def display_current_truth_table(self):
+        """Display current truth table"""
         if not hasattr(self, 'truth_display') or not self.truth_display:
             return
         
@@ -357,156 +460,248 @@ class QuizManager:
         for widget in self.truth_display.winfo_children():
             widget.destroy()
         
-        # Operation name
-        op_label = tk.Label(self.truth_display, text=f"Operation: {operation['name']} {operation['symbol']}",
-                           font=('Georgia', 14, 'bold'), fg=COLORS['gold'], bg=COLORS['ebony'])
-        op_label.pack(pady=10)
+        op = self.parent.logical_operations[self.current_operation_index]
+        self.create_truth_table_simple(self.truth_display, op)
+    
+    def create_truth_table_simple(self, parent, op):
+        """Create truth table with simple labeled display"""
+        # Create main frame for truth table
+        main_frame = tk.Frame(parent, bg=COLORS['cream'], bd=3, relief='raised')
+        main_frame.pack(fill=tk.X, pady=5)
         
-        # Description
-        desc_label = tk.Label(self.truth_display, text=operation['description'],
-                             font=('Georgia', 10), fg=COLORS['periwinkle'], bg=COLORS['ebony'],
-                             wraplength=600)
-        desc_label.pack(pady=5)
+        # Title
+        title_label = tk.Label(main_frame, text="TRUTH TABLE",
+                              font=('Georgia', 14, 'bold'),
+                              bg=COLORS['periwinkle'],
+                              fg=COLORS['deep_red'],
+                              pady=8)
+        title_label.pack(fill=tk.X)
         
-        # Create truth table
-        table_frame = tk.Frame(self.truth_display, bg=COLORS['cream'])
+        # Create inner frame for the table
+        table_frame = tk.Frame(main_frame, bg=COLORS['cream'])
         table_frame.pack(pady=10)
         
-        # Headers
-        headers = ['P', 'Q', 'Result']
-        for i, header in enumerate(headers):
-            label = tk.Label(table_frame, text=header, font=('Georgia', 11, 'bold'),
-                           bg=COLORS['periwinkle'], fg=COLORS['deep_red'],
-                           relief='raised', borderwidth=2, width=10, height=2)
-            label.grid(row=0, column=i, padx=1, pady=1)
+        # Header row
+        tk.Label(table_frame, text="P", font=('Georgia', 11, 'bold'),
+                bg=COLORS['periwinkle'], fg=COLORS['deep_red'],
+                width=8, height=1, relief='raised').grid(row=0, column=0, padx=2, pady=2)
+        tk.Label(table_frame, text="Q", font=('Georgia', 11, 'bold'),
+                bg=COLORS['periwinkle'], fg=COLORS['deep_red'],
+                width=8, height=1, relief='raised').grid(row=0, column=1, padx=2, pady=2)
+        tk.Label(table_frame, text="Result", font=('Georgia', 11, 'bold'),
+                bg=COLORS['periwinkle'], fg=COLORS['deep_red'],
+                width=10, height=1, relief='raised').grid(row=0, column=2, padx=2, pady=2)
         
-        # Input values
-        p_values = [False, False, True, True]
-        q_values = [False, True, False, True]
+        # Data rows
+        truth_values = [
+            ('F', 'F', op['truth_table'][0]),
+            ('F', 'T', op['truth_table'][1]),
+            ('T', 'F', op['truth_table'][2]),
+            ('T', 'T', op['truth_table'][3])
+        ]
         
-        for row in range(4):
-            # P
-            tk.Label(table_frame, text='T' if p_values[row] else 'F',
-                    font=('Courier', 11, 'bold'), bg=COLORS['cream'],
-                    fg=COLORS['deep_red'], width=10, height=2,
-                    relief='sunken').grid(row=row+1, column=0, padx=1, pady=1)
+        for row, (p, q, val) in enumerate(truth_values, start=1):
+            result = 'T' if val else 'F'
+            result_color = COLORS['success_green'] if val else COLORS['error_red']
             
-            # Q
-            tk.Label(table_frame, text='T' if q_values[row] else 'F',
-                    font=('Courier', 11, 'bold'), bg=COLORS['cream'],
-                    fg=COLORS['deep_red'], width=10, height=2,
-                    relief='sunken').grid(row=row+1, column=1, padx=1, pady=1)
-            
-            # Result
-            result = '?' if not self.answer_submitted else ('T' if operation['truth_table'][row] else 'F')
-            result_label = tk.Label(table_frame, text=result,
-                                   font=('Courier', 11, 'bold'), bg=COLORS['cream'],
-                                   fg=COLORS['wine'], width=10, height=2,
-                                   relief='sunken')
-            result_label.grid(row=row+1, column=2, padx=1, pady=1)
-        
-        # Answer options
-        if not self.answer_submitted:
-            self.options_frame = tk.Frame(self.truth_display, bg=COLORS['ebony'])
-            self.options_frame.pack(pady=10)
-            
-            tk.Label(self.options_frame, text="Select the correct truth table pattern:",
-                    font=('Georgia', 10), fg=COLORS['cream'], bg=COLORS['ebony']).pack()
-            
-            # Create option buttons
-            options_frame = tk.Frame(self.options_frame, bg=COLORS['ebony'])
-            options_frame.pack(pady=5)
-            
-            # Generate 4 possible truth table patterns (one correct, three random)
-            correct_pattern = ''.join(['T' if x else 'F' for x in operation['truth_table']])
-            options = [correct_pattern]
-            
-            # Add random wrong options
-            while len(options) < 4:
-                random_pattern = ''.join(random.choice(['T', 'F']) for _ in range(4))
-                if random_pattern not in options:
-                    options.append(random_pattern)
-            
-            random.shuffle(options)
-            
-            for i, option in enumerate(options):
-                btn = tk.Button(options_frame, text=option,
-                               command=lambda o=option: self.check_answer(o, correct_pattern),
-                               bg=COLORS['deep_red'], fg=COLORS['gold'],
-                               font=('Georgia', 10, 'bold'), width=10,
-                               cursor='hand2')
-                btn.grid(row=i//2, column=i%2, padx=5, pady=5)
-        
-        self.update_displays()
+            tk.Label(table_frame, text=p, font=('Courier New', 11, 'bold'),
+                    bg=COLORS['cream'], fg=COLORS['deep_red'],
+                    width=8, height=1, relief='sunken').grid(row=row, column=0, padx=2, pady=2)
+            tk.Label(table_frame, text=q, font=('Courier New', 11, 'bold'),
+                    bg=COLORS['cream'], fg=COLORS['deep_red'],
+                    width=8, height=1, relief='sunken').grid(row=row, column=1, padx=2, pady=2)
+            tk.Label(table_frame, text=result, font=('Courier New', 11, 'bold'),
+                    bg=COLORS['cream'], fg=result_color,
+                    width=10, height=1, relief='sunken').grid(row=row, column=2, padx=2, pady=2)
     
-    def check_answer(self, selected, correct):
-        """Check quiz answer"""
-        if self.answer_submitted:
+    def select_option(self, operation_name):
+        """Handle option selection"""
+        if not self.answer_submitted:
+            # Reset previous selection
+            if hasattr(self, 'selected_button') and self.selected_button:
+                self.selected_button.config(bg=COLORS['option_button'])
+            
+            # Find and highlight the selected button
+            for btn_info in self.option_buttons:
+                if btn_info['name'] == operation_name:
+                    self.selected_button = btn_info['button']
+                    self.selected_button.config(bg=COLORS['option_selected'])
+                    self.selected_answer = operation_name
+                    if self.submit_btn:
+                        self.submit_btn.config(state=tk.NORMAL)
+                    break
+    
+    def double_click_answer(self, operation_name):
+        """Handle double-click answer"""
+        if not self.answer_submitted:
+            self.select_option(operation_name)
+            self.check_answer()
+    
+    def on_button_leave(self, button):
+        """Handle button leave event"""
+        if button.cget('bg') != COLORS['success_green'] and button.cget('bg') != COLORS['error_red']:
+            button.config(bg=COLORS['option_button'])
+    
+    def check_answer(self):
+        """Check the answer"""
+        if self.answer_submitted or not self.selected_answer:
             return
         
         self.answer_submitted = True
-        self.selected_answer = selected
+        current_op = self.parent.logical_operations[self.current_operation_index]
         
-        if selected == correct:
-            self.score += 1
-            self.correct_streak += 1
-            result_text = "✓ CORRECT!"
-            result_color = COLORS['success_green']
-            
-            # Unlock song if this was a new operation
-            current_op = self.parent.logical_operations[self.current_operation_index]
-            if current_op['name'] not in [s['operation'] for s in self.parent.unlocked_songs]:
-                for song in self.parent.ave_mujica_songs:
-                    if song['operation'] == current_op['name'] and song not in self.parent.unlocked_songs:
-                        self.parent.unlocked_songs.append(song)
-                        break
+        if self.selected_answer == current_op['name']:
+            self.handle_correct_answer(current_op)
         else:
-            self.correct_streak = 0
-            result_text = f"✗ INCORRECT. The correct pattern was {correct}"
-            result_color = COLORS['error_red']
+            self.handle_wrong_answer(current_op, self.selected_answer)
         
-        self.questions_answered += 1
+        if self.score_display:
+            self.score_display.config(
+                text=f"⚜ Grimoire Progress: {self.questions_answered}/{self.total_questions} ⚜"
+            )
+        if self.streak_display:
+            self.streak_display.config(text=f"🔥 Streak: {self.correct_streak}")
         
-        # Show result
-        result_label = tk.Label(self.truth_display, text=result_text,
-                               font=('Georgia', 12, 'bold'), fg=result_color,
-                               bg=COLORS['ebony'])
-        result_label.pack(pady=10)
-        
-        # Next button
         if self.questions_answered < self.total_questions:
-            next_btn = tk.Button(self.truth_display, text="Next Gate →",
-                                command=self.next_question,
-                                bg=COLORS['gold'], fg=COLORS['ebony'],
-                                font=('Georgia', 11, 'bold'), cursor='hand2')
-            next_btn.pack(pady=5)
+            self.parent.root.after(3000, self.new_quiz)
         else:
-            # Show completion
-            completion_frame = tk.Frame(self.truth_display, bg=COLORS['gold'], bd=2, relief='raised')
-            completion_frame.pack(pady=20, padx=20, fill=tk.X)
-            
-            tk.Label(completion_frame, 
-                    text="🎉 CONGRATULATIONS! 🎉",
-                    font=('Georgia', 16, 'bold'),
-                    fg=COLORS['deep_red'], bg=COLORS['gold']).pack(pady=10)
-            
-            tk.Label(completion_frame,
-                    text=f"You've unlocked all {len(self.parent.unlocked_songs)} songs!",
-                    font=('Georgia', 12),
-                    fg=COLORS['ebony'], bg=COLORS['gold']).pack(pady=5)
-            
-            tk.Label(completion_frame,
-                    text="The complete truth is now yours...",
-                    font=('Georgia', 10, 'italic'),
-                    fg=COLORS['deep_red'], bg=COLORS['gold']).pack(pady=5)
-        
-        self.update_displays()
+            if self.submit_btn:
+                self.submit_btn.config(state=tk.DISABLED, bg=COLORS['mauve'])
+            self.show_completion_message()
     
-    def next_question(self):
-        """Move to next quiz question"""
-        self.answer_submitted = False
-        self.selected_answer = None
-        self.new_quiz()
+    def handle_correct_answer(self, current_op):
+        """Handle correct answer"""
+        self.questions_answered += 1
+        self.correct_streak += 1
+        
+        # Find and unlock the corresponding song
+        song = None
+        for s in self.parent.ave_mujica_songs:
+            if s['operation'] == current_op['name']:
+                song = s
+                break
+        
+        if song and song not in self.parent.unlocked_songs:
+            self.parent.unlocked_songs.append(song)
+            self.parent.update_songs_display()
+        
+        if self.status_icon:
+            self.status_icon.config(text="✓✓✓ VERITAS ✓✓✓", fg=COLORS['correct_gold'], bg=COLORS['ebony'])
+        if self.status_message:
+            if song:
+                # Check if song has deeper meaning from quests
+                deeper_meaning = ""
+                for character, quest in self.parent.quest_system.quests.items():
+                    if hasattr(quest, 'get_finale') and self.parent.quest_system.quest_completed.get(character, False):
+                        if song['title'] in str(quest.get_finale()):
+                            deeper_meaning = " (Deeper meaning unlocked!)"
+                
+                self.status_message.config(
+                    text=f"✨ Correct! You have unlocked: {song['title']}{deeper_meaning} ✨",
+                    fg=COLORS['cream'], bg=COLORS['ebony'])
+            else:
+                self.status_message.config(
+                    text="✨ Correct! You have unlocked a new song! ✨",
+                    fg=COLORS['cream'], bg=COLORS['ebony'])
+        
+        # Highlight the correct answer in green
+        for btn_info in self.option_buttons:
+            if btn_info['name'] == current_op['name']:
+                btn_info['button'].config(bg=COLORS['success_green'])
+                break
+        
+        if self.submit_btn:
+            self.submit_btn.config(state=tk.DISABLED, bg=COLORS['mauve'])
+    
+    def handle_wrong_answer(self, current_op, selected):
+        """Handle wrong answer"""
+        self.correct_streak = 0
+        
+        correct_song = None
+        for s in self.parent.ave_mujica_songs:
+            if s['operation'] == current_op['name']:
+                correct_song = s
+                break
+        
+        if self.status_icon:
+            self.status_icon.config(text="✗✗✗ FALSITAS ✗✗✗", fg=COLORS['error_red'], bg=COLORS['ebony'])
+        if self.status_message:
+            if correct_song:
+                self.status_message.config(
+                    text=f"❌ Incorrect. The correct operation was: {current_op['name']} {current_op['symbol']}\n"
+                         f"This would unlock: {correct_song['title']}",
+                    fg=COLORS['cream'], bg=COLORS['ebony'])
+            else:
+                self.status_message.config(
+                    text=f"❌ Incorrect. The correct operation was: {current_op['name']} {current_op['symbol']}",
+                    fg=COLORS['cream'], bg=COLORS['ebony'])
+        
+        # Highlight correct answer in green and wrong selection in red
+        for btn_info in self.option_buttons:
+            if btn_info['name'] == current_op['name']:
+                btn_info['button'].config(bg=COLORS['success_green'])
+            elif btn_info['name'] == selected:
+                btn_info['button'].config(bg=COLORS['error_red'])
+        
+        if self.submit_btn:
+            self.submit_btn.config(state=tk.DISABLED, bg=COLORS['mauve'])
+    
+    def restart_quiz(self):
+        """Restart the quiz"""
+        result = messagebox.askyesno(
+            "Restart Grimoire",
+            "Are you sure you want to restart? All progress will be lost and songs will be locked again."
+        )
+        
+        if result:
+            self.questions_answered = 0
+            self.correct_streak = 0
+            self.parent.unlocked_songs = []
+            self.answer_submitted = False
+            
+            if self.score_display:
+                self.score_display.config(text=f"⚜ Grimoire Progress: 0/{self.total_questions} ⚜")
+            if self.streak_display:
+                self.streak_display.config(text="🔥 Streak: 0")
+            
+            # Reset button highlights
+            for btn_info in self.option_buttons:
+                btn_info['button'].config(bg=COLORS['option_button'])
+            
+            if hasattr(self, 'selected_button'):
+                self.selected_button = None
+            
+            if self.submit_btn:
+                self.submit_btn.config(state=tk.DISABLED, bg=COLORS['deep_red'])
+            if self.status_icon:
+                self.status_icon.config(text="", bg=COLORS['ebony'])
+            if self.status_message:
+                self.status_message.config(text="", bg=COLORS['ebony'])
+            
+            self.parent.update_songs_display()
+            self.new_quiz()
+            
+            messagebox.showinfo("Grimoire Reset", "The gates have closed. Begin your journey anew...")
+    
+    def show_completion_message(self):
+        """Show completion message"""
+        if self.status_icon:
+            self.status_icon.config(text="🎉 GRIMOIRE COMPLETE 🎉", fg=COLORS['gold'], bg=COLORS['ebony'])
+        if self.status_message:
+            self.status_message.config(
+                text="You have unlocked all 16 songs! The masquerade's secrets are yours.",
+                fg=COLORS['cream'], bg=COLORS['ebony'])
+        
+        # Check if all quests are also completed
+        if all(self.parent.quest_system.quest_completed.values()):
+            messagebox.showinfo("The Ultimate Truth", 
+                              "You have mastered all operations AND completed every character's journey!\n\n"
+                              "The full story of Ave Mujica is now yours to understand.")
+        else:
+            messagebox.showinfo("Grimoire Complete", 
+                              "Congratulations! You have unlocked all 16 songs!\n\n"
+                              "But the characters still have stories to tell...\n"
+                              "Complete their quests to unlock the deepest meanings.")
     
     def update_displays(self):
         """Update score and streak displays"""
@@ -524,7 +719,7 @@ class AveMujicaLogicGrimoire:
     def __init__(self, root):
         self.root = root
         self.root.title("Ave Mujica - The Complete Logic Grimoire")
-        self.root.geometry("1400x900")
+        self.root.geometry("1400x1000")
         self.root.configure(bg=COLORS['shadow'])
         
         # Make window responsive
@@ -565,7 +760,7 @@ class AveMujicaLogicGrimoire:
         final_quest = AveMujicaFinalQuest(self)
         self.quest_system.set_quests(quests_dict, final_quest)
         
-        # UI references
+        # UI references - IMPORTANT: Initialize all UI attributes
         self.cards_frame = None
         self.canvas = None
         self.scrollable_frame = None
@@ -604,6 +799,17 @@ class AveMujicaLogicGrimoire:
                        background=COLORS['gold'],
                        troughcolor=COLORS['shadow'])
     
+    def center_window(self, window, width, height):
+        """Center a window on the screen"""
+        window.update_idletasks()
+        screen_width = window.winfo_screenwidth()
+        screen_height = window.winfo_screenheight()
+        
+        x = (screen_width - width) // 2
+        y = (screen_height - height) // 2
+        
+        window.geometry(f'{width}x{height}+{x}+{y}')
+    
     def create_main_website(self):
         """Create the main website with all sections"""
         
@@ -623,7 +829,7 @@ class AveMujicaLogicGrimoire:
         self.create_victorian_status(main_container)
     
     def create_navigation(self, parent):
-        """Create centered navigation bar"""
+        """Create centered navigation bar with reset button"""
         nav_frame = tk.Frame(parent, bg=COLORS['deep_red'], height=70)
         nav_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10))
         nav_frame.grid_propagate(False)
@@ -655,6 +861,87 @@ class AveMujicaLogicGrimoire:
             font=('Georgia', 11, 'bold'), relief='raised',
             borderwidth=2, padx=20, pady=8, cursor='hand2')
         quest_btn.pack(side=tk.LEFT, padx=10)
+        
+        # Reset button
+        reset_btn = tk.Button(nav_center, text="⟲ Reset",
+                             command=self.open_reset_menu,
+                             bg=COLORS['error_red'], fg=COLORS['gold'],
+                             font=('Georgia', 11, 'bold'), relief='raised',
+                             borderwidth=2, padx=20, pady=8, cursor='hand2')
+        reset_btn.pack(side=tk.LEFT, padx=10)
+    
+    def open_reset_menu(self):
+        """Open reset menu"""
+        reset_window = tk.Toplevel(self.root)
+        reset_window.title("Reset Progress")
+        reset_window.configure(bg=COLORS['ebony'])
+        reset_window.transient(self.root)
+        reset_window.grab_set()
+        
+        self.window_manager.center_window(reset_window, 500, 400)
+        
+        # Main frame
+        main_frame = tk.Frame(reset_window, bg=COLORS['ebony'], padx=30, pady=30)
+        main_frame.pack(expand=True, fill=tk.BOTH)
+        
+        # Title
+        tk.Label(main_frame, text="⟲ Reset Options",
+                font=('Georgia', 20, 'bold'), fg=COLORS['gold'],
+                bg=COLORS['ebony']).pack(pady=20)
+        
+        # Description
+        tk.Label(main_frame, 
+                text="Choose what you would like to reset:",
+                font=('Georgia', 12), fg=COLORS['cream'],
+                bg=COLORS['ebony']).pack(pady=10)
+        
+        # Reset buttons
+        button_frame = tk.Frame(main_frame, bg=COLORS['ebony'])
+        button_frame.pack(pady=20)
+        
+        # Individual character resets
+        tk.Label(button_frame, text="Reset Individual Quests:",
+                font=('Georgia', 10, 'bold'), fg=COLORS['periwinkle'],
+                bg=COLORS['ebony']).pack(pady=5)
+        
+        char_frame = tk.Frame(button_frame, bg=COLORS['ebony'])
+        char_frame.pack(pady=10)
+        
+        row, col = 0, 0
+        for character in self.characters.keys():
+            btn = tk.Button(char_frame, text=character.split()[0],
+                           command=lambda c=character: self.quest_system.confirm_reset_character(c),
+                           bg=COLORS['deep_red'], fg=COLORS['gold'],
+                           font=('Georgia', 9, 'bold'),
+                           width=12, pady=5, cursor='hand2')
+            btn.grid(row=row, column=col, padx=5, pady=5)
+            
+            col += 1
+            if col > 2:
+                col = 0
+                row += 1
+        
+        # Separator
+        tk.Frame(main_frame, bg=COLORS['gold'], height=2).pack(fill=tk.X, pady=20)
+        
+        # Reset all button
+        tk.Button(main_frame, text="⚠️ RESET ALL PROGRESS ⚠️",
+                 command=lambda: [reset_window.destroy(), self.quest_system.confirm_reset_all()],
+                 bg=COLORS['error_red'], fg=COLORS['gold'],
+                 font=('Georgia', 12, 'bold'), relief='raised',
+                 borderwidth=3, padx=30, pady=10, cursor='hand2').pack(pady=10)
+        
+        # Warning
+        tk.Label(main_frame, 
+                text="Warning: Resetting progress cannot be undone!",
+                font=('Georgia', 9, 'italic'), fg=COLORS['terracotta'],
+                bg=COLORS['ebony']).pack(pady=10)
+        
+        # Close button
+        tk.Button(main_frame, text="Cancel",
+                 command=reset_window.destroy,
+                 bg=COLORS['shadow'], fg=COLORS['cream'],
+                 font=('Georgia', 10), cursor='hand2').pack(pady=10)
     
     def open_quest_hub(self):
         """Open the quest selection hub"""
@@ -664,7 +951,7 @@ class AveMujicaLogicGrimoire:
         quest_hub.transient(self.root)
         quest_hub.grab_set()
         
-        self.window_manager.center_window(quest_hub, 1000, 800)
+        self.center_window(quest_hub, 1000, 800)
         self.quest_system.create_quest_selector(quest_hub)
     
     def create_scrollable_content(self, parent):
@@ -922,7 +1209,7 @@ class AveMujicaLogicGrimoire:
         tutorial_window.transient(self.root)
         tutorial_window.grab_set()
         
-        self.window_manager.center_window(tutorial_window, 900, 800)
+        self.center_window(tutorial_window, 900, 800)
         
         # Main frame
         main_frame = tk.Frame(tutorial_window, bg=COLORS['ebony'])
@@ -1039,7 +1326,7 @@ class AveMujicaLogicGrimoire:
         # Quest progress summary
         self._create_quest_progress_summary(content)
         
-        # Cards frame
+        # Cards frame - IMPORTANT: This creates the cards_frame
         self.cards_frame = tk.Frame(content, bg=COLORS['ebony'])
         self.cards_frame.pack(pady=20)
         
@@ -1076,7 +1363,18 @@ class AveMujicaLogicGrimoire:
     
     def refresh_character_encounters(self):
         """Refresh the character cards to show updated quest status"""
-        if not self.cards_frame:
+        # Add error checking
+        if not hasattr(self, 'cards_frame') or self.cards_frame is None:
+            print("Warning: cards_frame not initialized yet")
+            return
+        
+        # Check if cards_frame has been destroyed
+        try:
+            if not self.cards_frame.winfo_exists():
+                print("Warning: cards_frame no longer exists")
+                return
+        except:
+            print("Warning: cards_frame is invalid")
             return
         
         # Clear existing cards
@@ -1093,9 +1391,12 @@ class AveMujicaLogicGrimoire:
             if col > 2:
                 col = 0
                 row += 1
+        
+        # Force update
+        self.cards_frame.update_idletasks()
     
     def create_gates_of_truth_section(self, parent):
-        """Create the 16 Gates of Truth section"""
+        """Create the 16 Gates of Truth section with centered quiz interface"""
         section = tk.Frame(parent, bg=COLORS['shadow'])
         section.pack(fill=tk.X, pady=30, padx=50)
         
@@ -1113,16 +1414,12 @@ class AveMujicaLogicGrimoire:
         tk.Label(content, text="Unlock All Ave Mujica Songs Through Logical Revelation",
                 font=('Georgia', 14, 'italic'), fg=COLORS['periwinkle'], bg=COLORS['ebony']).pack()
         
-        # Note about quest rewards
+        # Add note about quest rewards
         tk.Label(content, text="✨ Completing character quests unlocks deeper song meanings ✨",
                 font=('Georgia', 10, 'italic'), fg=COLORS['terracotta'], bg=COLORS['ebony']).pack(pady=5)
         
         # Quiz interface
-        self._create_quiz_interface(content)
-    
-    def _create_quiz_interface(self, parent):
-        """Create quiz interface"""
-        quiz_frame = tk.Frame(parent, bg=COLORS['ebony'])
+        quiz_frame = tk.Frame(content, bg=COLORS['ebony'])
         quiz_frame.pack(fill=tk.X, pady=20, padx=30)
         
         # Score display
@@ -1147,58 +1444,211 @@ class AveMujicaLogicGrimoire:
         self.quiz_manager.truth_display = tk.Frame(quiz_frame, bg=COLORS['ebony'])
         self.quiz_manager.truth_display.pack(pady=15, padx=20, fill=tk.X)
         
-        # Unlocked songs display
-        self.songs_frame = tk.Frame(quiz_frame, bg=COLORS['shadow'], bd=2, relief='ridge')
-        self.songs_frame.pack(fill=tk.X, pady=20)
+        # Question
+        self.quiz_manager.question_label = tk.Label(quiz_frame,
+            text="Which logical operation produces this truth table?",
+            font=('Georgia', 14),
+            fg=COLORS['periwinkle'],
+            bg=COLORS['ebony'])
+        self.quiz_manager.question_label.pack(pady=10)
         
-        tk.Label(self.songs_frame, text="🎵 UNLOCKED SONGS 🎵",
-                font=('Georgia', 14, 'bold'),
-                fg=COLORS['gold'], bg=COLORS['shadow']).pack(pady=5)
+        # Click instruction
+        tk.Label(quiz_frame,
+            text="(Click any button to select and lock in your guess)",
+            font=('Georgia', 10, 'italic'),
+            fg=COLORS['gold'],
+            bg=COLORS['ebony']).pack()
         
-        self.songs_display = tk.Frame(self.songs_frame, bg=COLORS['shadow'])
-        self.songs_display.pack(pady=10)
+        # Status display
+        self.quiz_manager.status_frame = tk.Frame(quiz_frame, bg=COLORS['ebony'], height=60)
+        self.quiz_manager.status_frame.pack(fill=tk.X, pady=5)
         
-        self.update_songs_display()
+        self.quiz_manager.status_icon = tk.Label(self.quiz_manager.status_frame,
+            text="",
+            font=('Georgia', 20),
+            bg=COLORS['ebony'])
+        self.quiz_manager.status_icon.pack()
+        
+        self.quiz_manager.status_message = tk.Label(self.quiz_manager.status_frame,
+            text="",
+            font=('Georgia', 11, 'italic'),
+            bg=COLORS['ebony'],
+            wraplength=600)
+        self.quiz_manager.status_message.pack()
+        
+        # Operation selection area - Buttons grid (4x4)
+        options_frame = tk.Frame(quiz_frame, bg=COLORS['ebony'])
+        options_frame.pack(pady=15, fill=tk.X)
+        
+        # Center the options grid
+        options_center = tk.Frame(options_frame, bg=COLORS['ebony'])
+        options_center.pack(expand=True)
+        
+        # Create a grid frame for the option buttons
+        self.quiz_manager.option_buttons_grid = tk.Frame(options_center, bg=COLORS['ebony'])
+        self.quiz_manager.option_buttons_grid.pack()
+        
+        # Operation selection variable
+        self.quiz_manager.operation_var = tk.StringVar()
+        self.quiz_manager.option_buttons = []
+        
+        # Create operation buttons in a 4x4 grid
+        for i, op in enumerate(self.logical_operations):
+            row = i // 4
+            col = i % 4
+            
+            # Create a frame for each button with padding
+            btn_frame = tk.Frame(self.quiz_manager.option_buttons_grid, bg=COLORS['ebony'])
+            btn_frame.grid(row=row, column=col, padx=8, pady=8)
+            
+            # Create button with operation name and symbol
+            btn_text = f"{op['symbol']}\n{op['name']}"
+            btn = tk.Button(btn_frame,
+                text=btn_text,
+                bg=COLORS['option_button'],
+                fg=COLORS['cream'],
+                font=('Georgia', 9, 'bold'),
+                relief='raised',
+                borderwidth=3,
+                width=20,
+                height=3,
+                cursor='hand2',
+                command=lambda op_name=op['name']: self.quiz_manager.select_option(op_name))
+            
+            # Bind double-click
+            btn.bind('<Double-Button-1>', lambda e, op_name=op['name']: self.quiz_manager.double_click_answer(op_name))
+            
+            # Hover effects
+            btn.bind("<Enter>", lambda e, b=btn: b.config(bg=COLORS['option_hover']))
+            btn.bind("<Leave>", lambda e, b=btn: self.quiz_manager.on_button_leave(b))
+            
+            btn.pack()
+            
+            # Store button reference
+            self.quiz_manager.option_buttons.append({
+                'button': btn,
+                'frame': btn_frame,
+                'name': op['name'],
+                'original_bg': COLORS['option_button']
+            })
+        
+        # Submit button
+        button_frame = tk.Frame(quiz_frame, bg=COLORS['ebony'])
+        button_frame.pack(pady=15)
+        
+        self.quiz_manager.submit_btn = tk.Button(button_frame,
+            text="⚜  LOCK IN GUESS (CLICK / DOUBLE-CLICK)  ⚜",
+            command=self.quiz_manager.check_answer,
+            bg=COLORS['deep_red'],
+            fg=COLORS['gold'],
+            font=('Georgia', 12, 'bold'),
+            relief='raised',
+            borderwidth=4,
+            padx=30,
+            pady=8,
+            cursor='hand2',
+            state=tk.DISABLED)  # Initially disabled until an option is selected
+        self.quiz_manager.submit_btn.pack()
+        
+        # Add hover effect for submit button
+        self.quiz_manager.submit_btn.bind("<Enter>", lambda e: self.quiz_manager.submit_btn.config(bg=COLORS['button_hover']))
+        self.quiz_manager.submit_btn.bind("<Leave>", lambda e: self.quiz_manager.submit_btn.config(bg=COLORS['deep_red']))
+        
+        # Input method hints
+        hints_frame = tk.Frame(quiz_frame, bg=COLORS['ebony'])
+        hints_frame.pack(pady=5)
+        
+        tk.Label(hints_frame,
+            text="⚡ Click to select | ⚡ Double-click to select and submit | ⌨️ Press ENTER after selection",
+            font=('Georgia', 9, 'italic'),
+            fg=COLORS['periwinkle'],
+            bg=COLORS['ebony']).pack()
+        
+        # Restart button
+        self.quiz_manager.restart_btn = tk.Button(quiz_frame,
+            text="🔄  Restart Grimoire  🔄",
+            command=self.quiz_manager.restart_quiz,
+            bg=COLORS['mauve'],
+            fg=COLORS['gold'],
+            font=('Georgia', 10),
+            relief='raised',
+            borderwidth=2,
+            padx=20,
+            pady=5,
+            cursor='hand2')
+        self.quiz_manager.restart_btn.pack(pady=10)
+        
+        # Create grimoire display
+        self.create_grimoire_display(quiz_frame)
         
         # Initialize quiz
         self.quiz_manager.new_quiz()
     
+    def create_grimoire_display(self, parent):
+        """Create the grimoire display for unlocked songs"""
+        grimoire_frame = tk.LabelFrame(parent, text="❖ Unlocked Songs ❖",
+                                      bg=COLORS['ebony'], fg=COLORS['gold'],
+                                      font=('Georgia', 10, 'bold'))
+        grimoire_frame.pack(fill=tk.X, pady=10, padx=20)
+        
+        # Center the song cards
+        cards_center = tk.Frame(grimoire_frame, bg=COLORS['ebony'])
+        cards_center.pack(expand=True)
+        
+        # Create frame for song cards
+        self.quiz_manager.songs_container = tk.Frame(cards_center, bg=COLORS['ebony'])
+        self.quiz_manager.songs_container.pack(fill=tk.X, pady=5)
+        
+        # Create song cards
+        self.update_songs_display()
+    
     def update_songs_display(self):
         """Update the unlocked songs display"""
-        if not hasattr(self, 'songs_display'):
+        if not hasattr(self.quiz_manager, 'songs_container') or not self.quiz_manager.songs_container:
             return
         
         # Clear previous display
-        for widget in self.songs_display.winfo_children():
+        for widget in self.quiz_manager.songs_container.winfo_children():
             widget.destroy()
         
-        if self.unlocked_songs:
-            # Create song cards in a grid
-            row, col = 0, 0
-            for song in self.unlocked_songs:
-                song_card = tk.Frame(self.songs_display, bg=song['color'], bd=2, relief='raised')
-                song_card.grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
-                
-                tk.Label(song_card, text=song['title'],
-                        font=('Georgia', 10, 'bold'),
-                        fg=COLORS['gold'], bg=song['color']).pack(pady=2)
-                
-                tk.Label(song_card, text=song['operation'],
-                        font=('Georgia', 8),
-                        fg=COLORS['cream'], bg=song['color']).pack()
-                
-                tk.Label(song_card, text=f"\"{song['lyric'][:30]}...\"",
-                        font=('Georgia', 7, 'italic'),
-                        fg=COLORS['periwinkle'], bg=song['color'],
-                        wraplength=150).pack(pady=2)
-                
-                col += 1
-                if col > 2:
-                    col = 0
-                    row += 1
-        else:
-            tk.Label(self.songs_display, text="No songs unlocked yet. Complete quests and solve the gates!",
-                    font=('Georgia', 10), fg=COLORS['cream'], bg=COLORS['shadow']).pack()
+        # Center the cards grid
+        cards_grid = tk.Frame(self.quiz_manager.songs_container, bg=COLORS['ebony'])
+        cards_grid.pack(expand=True)
+        
+        # Create cards in a grid (4 per row)
+        row_frame = None
+        for i, song in enumerate(self.ave_mujica_songs[:16]):  # Only show first 16 songs
+            if i % 4 == 0:
+                row_frame = tk.Frame(cards_grid, bg=COLORS['ebony'])
+                row_frame.pack(fill=tk.X, pady=2)
+            
+            locked = song not in self.unlocked_songs
+            
+            # Create card
+            card = tk.Frame(row_frame, bg=COLORS['deep_red'] if locked else song['color'],
+                          bd=2, relief='raised', width=180, height=70)
+            card.pack(side=tk.LEFT, padx=4, pady=4)
+            card.pack_propagate(False)
+            
+            inner = tk.Frame(card, bg=COLORS['ebony'], bd=1, relief='sunken')
+            inner.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
+            
+            # Locked/unlocked indicator
+            status = "🔒" if locked else "🔓"
+            tk.Label(inner, text=status,
+                    font=('Georgia', 9), bg=COLORS['ebony'],
+                    fg=COLORS['deep_red'] if locked else COLORS['gold']).pack()
+            
+            # Song title (truncated if too long)
+            title = song['title'][:12] + "..." if len(song['title']) > 12 else song['title']
+            tk.Label(inner, text=title,
+                    font=('Georgia', 7, 'bold'), bg=COLORS['ebony'],
+                    fg=COLORS['cream'] if locked else COLORS['gold']).pack()
+            
+            if not locked:
+                tk.Label(inner, text=song['operation'],
+                        font=('Georgia', 6, 'italic'), bg=COLORS['ebony'],
+                        fg=COLORS['periwinkle']).pack()
     
     def create_victorian_status(self, parent):
         """Create the status bar"""
@@ -1216,7 +1666,7 @@ class AveMujicaLogicGrimoire:
         
         completed_quests = sum(1 for c in self.quest_system.quest_completed.values() if c)
         unlocked_songs = len(self.unlocked_songs)
-        nav_hint = f"Quests: {completed_quests}/5 Complete | Songs: {unlocked_songs}/5 Unlocked"
+        nav_hint = f"Quests: {completed_quests}/5 Complete | Songs: {unlocked_songs}/16 Unlocked"
         
         tk.Label(status_center, text=nav_hint,
                 fg=COLORS['periwinkle'], bg=COLORS['deep_red'],
@@ -1232,7 +1682,3 @@ class AveMujicaLogicGrimoire:
         tk.Label(status_center, text=random.choice(quotes),
                 fg=COLORS['gold'], bg=COLORS['deep_red'],
                 font=('Georgia', 9, 'italic')).pack(side=tk.LEFT, padx=10)
-    
-    def create_song_cards(self):
-        """Update song cards when new songs are unlocked"""
-        self.update_songs_display()

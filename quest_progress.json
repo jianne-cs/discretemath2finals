@@ -1,0 +1,19 @@
+{
+  "quest_progress": {
+    "Sakiko Togawa": 1,
+    "Uika Misumi": 0,
+    "Mutsumi Wakaba": 0,
+    "Umiri Yahata": 0,
+    "Nyamu Y\u016btenji": 0
+  },
+  "quest_completed": {
+    "Sakiko Togawa": false,
+    "Uika Misumi": false,
+    "Mutsumi Wakaba": false,
+    "Umiri Yahata": false,
+    "Nyamu Y\u016btenji": false
+  },
+  "completed_quests": [],
+  "final_shown": false,
+  "window_side": "right"
+}
