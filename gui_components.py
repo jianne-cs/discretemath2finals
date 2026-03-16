@@ -124,7 +124,7 @@ class CharacterData:
 
 
 class LogicalOperationsData:
-    """Manages logical operations data"""
+    """Manages logical operations data - UPDATED with all 16 unique operations"""
     
     def __init__(self):
         self.operations = [
@@ -255,138 +255,145 @@ class LogicalOperationsData:
         """Return the index of an item in the operations list"""
         return self.operations.index(item)
 
-
 class SongsData:
-    """Manages Ave Mujica songs data"""
-    
+    """Manages Ave Mujica songs data - UPDATED with new assignments"""
     def __init__(self):
         self.songs = [
-            # Major Releases
+            # Binary Operations
             {
                 'title': 'Ave Mujica',
                 'operation': 'NAND',
-                'meaning': 'The band\'s anthem - not all is as it seems',
+                'meaning': 'The band\'s anthem - not all is as it seems - false only when everything appears true',
                 'color': '#5C3A3A',
-                'lyric': "We are not merely what you see before you..."
+                'lyric': "We are not merely what you see before you...",
+                'image_file': 'avemujica.png'
             },
             {
                 'title': 'KiLLKiSS',
                 'operation': 'XOR',
-                'meaning': 'Kill or kiss - exactly one must be chosen',
+                'meaning': 'Kill or kiss - exactly one must be chosen - the ultimate exclusive choice',
                 'color': '#8B0000',
-                'lyric': "The line between love and death blurs..."
+                'lyric': "The line between love and death blurs...",
+                'image_file': 'killkiss.png'
             },
             {
-                'title': 'Mas?uerade Rhapsody Re?uest',
-                'operation': 'AND',
-                'meaning': 'Both masks and reality must be true',
-                'color': '#6B4C4C',
-                'lyric': "In this masquerade, only when both hearts beat as one..."
+                'title': 'georgette me, georgette you',
+                'operation': 'XNOR',
+                'meaning': 'I am you if and only if you are me - perfect mutual identity and reflection',
+                'color': '#9E7B9B',
+                'lyric': "When I become you and you become me, we are complete...",
+                'image_file': 'georgette.png'
             },
             {
                 'title': 'Kuro no Birthday',
                 'operation': 'OR',
-                'meaning': 'Darkness or birth - at least one must be true',
+                'meaning': 'Darkness or birth - at least one must be true - duality of existence',
                 'color': '#2D1B1B',
-                'lyric': "A birthday in darkness, where shadows or light may prevail..."
+                'lyric': "A birthday in darkness, where shadows or light may prevail...",
+                'image_file': 'kuronobirthday.png'
             },
             {
-                'title': 'Octagram Dance',
-                'operation': 'XNOR',
-                'meaning': 'The eight-pointed star dances if and only if all steps align',
-                'color': '#C49A6C',  # Golden bronze for the octagram
-                'lyric': "Eight points, one circle, all moving as one...",
-            },
-            {
-                'title': 'Imprisoned XII',
-                'operation': 'Contradiction',
-                'meaning': 'Freedom is impossible - always false',
-                'color': '#1A1A1A',
-                'lyric': "Twelve chains bind the soul in eternal confinement..."
+                'title': 'Sophie',
+                'operation': 'AND',
+                'meaning': 'Wisdom requires both knowledge AND understanding - both heart and mind must speak',
+                'color': '#9E7B9B',
+                'lyric': "In the pursuit of truth, both heart and mind must speak...",
+                'image_file': 'sophie.png'
             },
             {
                 'title': 'Crucifix X',
-                'operation': 'IMPLICATION',
-                'meaning': 'If you bear the cross, then you must suffer',
+                'operation': 'Implication',
+                'meaning': 'If you bear the cross, then you must suffer - the promise of sacrifice',
                 'color': '#4A2C2C',
-                'lyric': "The tenth sacrifice carries the weight of all..."
+                'lyric': "The tenth sacrifice carries the weight of all...",
+                'image_file': 'crucifixX.png'
             },
-            
             {
-                'title': 'Ether',
-                'operation': 'Tautology',
-                'meaning': 'The fifth element - always true, always present',
-                'color': '#C4A962',
-                'lyric': "Beyond the four, the void speaks eternal truths..."
+                'title': 'Deep Into The Forest',
+                'operation': 'NOR',
+                'meaning': 'Neither path leads where you expect - both paths are false',
+                'color': '#2C4A2C',
+                'lyric': "Lost in the woods where no trail is true...",
+                'image_file': 'deepintoforest.png'
             },
             
             # Symbol Series
             {
                 'title': 'Symbol I: △ Fire',
-                'operation': 'Material Implication',
-                'meaning': 'Fire transforms - if ignited, then it burns',
+                'operation': 'Converse Implication',
+                'meaning': 'Fire transforms - if it burns, then it was ignited - reverse cause and effect',
                 'color': '#C44C4C',
-                'lyric': "The triangle burns with consuming passion..."
+                'lyric': "The triangle burns with consuming passion...",
+                'image_file': 'fire.png'
             },
             {
                 'title': 'Symbol II: 🜁 Air',
-                'operation': 'Converse Implication',
-                'meaning': 'Wind carries - if it flows, then it moves',
+                'operation': 'Negation of P',
+                'meaning': 'Wind carries - denies the expected - invisible forces negate what we know',
                 'color': '#6BA5B0',
-                'lyric': "Invisible forces guide our fate..."
+                'lyric': "Invisible forces guide our fate...",
+                'image_file': 'air.png'
             },
             {
                 'title': 'Symbol III: ▽ Water',
                 'operation': 'Material Nonimplication',
-                'meaning': 'Water carves - only when P without Q',
+                'meaning': 'Water carves - only when P without Q - flows under specific conditions',
                 'color': '#3A6B8C',
-                'lyric': "Flowing tears shape the stone of memory..."
+                'lyric': "Flowing tears shape the stone of memory...",
+                'image_file': 'water.png'
             },
             {
                 'title': 'Symbol IV: 🜃 Earth',
                 'operation': 'Converse Nonimplication',
-                'meaning': 'Earth grounds - only when Q without P',
+                'meaning': 'Earth grounds - only when Q without P - the soil remembers selectively',
                 'color': '#6B4C2C',
-                'lyric': "The soil remembers what we forget..."
+                'lyric': "The soil remembers what we forget...",
+                'image_file': 'earth.png'
             },
             
+            # Special Operations
+            {
+                'title': 'Imprisoned XII',
+                'operation': 'Contradiction',
+                'meaning': 'Freedom is impossible - always false - eternal confinement',
+                'color': '#1A1A1A',
+                'lyric': "Twelve chains bind the soul in eternal confinement...",
+                'image_file': 'XII.png'
+            },
+            {
+                'title': 'Octagram Dance',
+                'operation': 'Tautology',
+                'meaning': 'The eight-pointed star dances eternally - always true, always present',
+                'color': '#C49A6C',
+                'lyric': "Eight points, one circle, all moving as one...",
+                'image_file': 'octagramdance.png'
+            },
             
-            # Other Songs
+            # Projections
             {
                 'title': 'DIVINE',
-                'operation': 'BICONDITIONAL',
-                'meaning': 'Divine truth exists if and only if we have faith',
+                'operation': 'Projection Q',
+                'meaning': 'The gods speak only when we listen - divine truth is projected through faith',
                 'color': '#C49A6C',
-                'lyric': "The gods speak only when we listen..."
-            },
-            {
-                'title': 'Choir \'S\' Choir',
-                'operation': 'Projection P',
-                'meaning': 'The choir sings only of P',
-                'color': '#5D4A4A',
-                'lyric': "Many voices, one truth, all singing of what was..."
+                'lyric': "The gods speak only when we listen...",
+                'image_file': 'divine.png'
             },
             {
                 'title': 'Alter Ego',
-                'operation': 'XOR',
-                'meaning': 'True self or false self - exactly one can exist',
+                'operation': 'Projection P',
+                'meaning': 'The mask and the face - true self projects regardless of false self',
                 'color': '#8A6E8E',
-                'lyric': "The mask and the face cannot both be real..."
+                'lyric': "The mask and the face cannot both be real...",
+                'image_file': 'alterego.png'
             },
             {
-                'title': 'Sophie',
-                'operation': 'AND',
-                'meaning': 'Wisdom requires both knowledge AND understanding',
-                'color': '#9E7B9B',
-                'lyric': "In the pursuit of truth, both heart and mind must speak..."
+                'title': 'Ether',
+                'operation': 'Negation of Q',
+                'meaning': 'The fifth element negates the other four - beyond the four, the void speaks',
+                'color': '#C4A962',
+                'lyric': "Beyond the four, the void speaks eternal truths...",
+                'image_file': 'ether.png'
             },
-            {
-                'title': 'Deep Into The Forest',
-                'operation': 'NOR',
-                'meaning': 'Neither path leads where you expect',
-                'color': '#2C4A2C',
-                'lyric': "Lost in the woods where no trail is true..."
-            }
         ]
     
     def __getitem__(self, index):
@@ -400,7 +407,7 @@ class SongsData:
 
 
 class QuizManager:
-    """Manages quiz state and logic"""
+    """Manages quiz state and logic - UPDATED for random unique questions"""
     
     def __init__(self, parent):
         self.parent = parent
@@ -413,6 +420,11 @@ class QuizManager:
         self.selected_answer = None
         self.selected_button = None
         
+        # NEW: Track which operations have been asked
+        self.available_operation_indices = list(range(16))  # 0-15 indices
+        self.asked_operations = []  # Track asked operations
+        self.operation_order = []   # Random order of operations
+        
         self.score_display = None
         self.streak_display = None
         self.truth_display = None
@@ -424,30 +436,28 @@ class QuizManager:
         self.option_buttons = []
         self.songs_container = None
         self.song_cards = []
+        
+        # Shuffle operations at start
+        self.shuffle_operations()
+    
+    def shuffle_operations(self):
+        """Create a random order of all 16 unique operations"""
+        self.available_operation_indices = list(range(16))
+        random.shuffle(self.available_operation_indices)
+        self.operation_order = self.available_operation_indices.copy()
+        self.asked_operations = []
+        print(f"Operation order: {self.operation_order}")  # Debug
     
     def new_quiz(self):
-        """Start a new quiz round"""
+        """Start a new quiz round with unique random operation"""
         if self.questions_answered < self.total_questions:
-            # Get unlocked operations based on completed quests
-            unlocked_operations = []
-            for character, completed in self.parent.quest_system.quest_completed.items():
-                if completed:
-                    quest = self.parent.quest_system.quests.get(character)
-                    if quest:
-                        unlocked_operations.append(quest.operation.split()[0])
-            
-            # Find available operations
-            available_ops = [op for op in self.parent.logical_operations 
-                            if op['name'] not in unlocked_operations]
-            
-            if available_ops:
-                self.current_operation_index = self.parent.logical_operations.index(
-                    random.choice(available_ops)
-                )
+            # Get the next operation from the shuffled list
+            if self.available_operation_indices:
+                self.current_operation_index = self.available_operation_indices.pop(0)
+                self.asked_operations.append(self.current_operation_index)
             else:
-                self.current_operation_index = random.randint(
-                    0, len(self.parent.logical_operations) - 1
-                )
+                # Fallback if something goes wrong
+                self.current_operation_index = random.randint(0, 15)
             
             self.display_current_truth_table()
             self.answer_submitted = False
@@ -519,15 +529,15 @@ class QuizManager:
             result = 'T' if val else 'F'
             result_color = COLORS['success_green'] if val else COLORS['error_red']
             
-            tk.Label(table_frame, text=p, font=('Courier New', 11, 'bold'),
+            tk.Label(table_frame, text=p, font=('Courier New', 15, 'bold'),
                     bg=COLORS['cream'], fg=COLORS['deep_red'],
-                    width=8, height=1, relief='sunken').grid(row=row, column=0, padx=2, pady=2)
-            tk.Label(table_frame, text=q, font=('Courier New', 11, 'bold'),
+                    width=12, height=3, relief='sunken').grid(row=row, column=0, padx=2, pady=2)
+            tk.Label(table_frame, text=q, font=('Courier New', 15, 'bold'),
                     bg=COLORS['cream'], fg=COLORS['deep_red'],
-                    width=8, height=1, relief='sunken').grid(row=row, column=1, padx=2, pady=2)
-            tk.Label(table_frame, text=result, font=('Courier New', 11, 'bold'),
+                    width=12, height=3, relief='sunken').grid(row=row, column=1, padx=2, pady=2)
+            tk.Label(table_frame, text=result, font=('Courier New', 15, 'bold'),
                     bg=COLORS['cream'], fg=result_color,
-                    width=10, height=1, relief='sunken').grid(row=row, column=2, padx=2, pady=2)
+                    width=12, height=3, relief='sunken').grid(row=row, column=2, padx=2, pady=2)
     
     def select_option(self, operation_name):
         """Handle option selection"""
@@ -662,7 +672,7 @@ class QuizManager:
             self.submit_btn.config(state=tk.DISABLED, bg=COLORS['mauve'])
     
     def restart_quiz(self):
-        """Restart the quiz"""
+        """Restart the quiz with fresh random order"""
         result = messagebox.askyesno(
             "Restart Grimoire",
             "Are you sure you want to restart? All progress will be lost and songs will be locked again."
@@ -673,6 +683,9 @@ class QuizManager:
             self.correct_streak = 0
             self.parent.unlocked_songs = []
             self.answer_submitted = False
+            
+            # Reshuffle operations
+            self.shuffle_operations()
             
             if self.score_display:
                 self.score_display.config(text=f"⚜ Grimoire Progress: 0/{self.total_questions} ⚜")
@@ -785,6 +798,7 @@ class AveMujicaLogicGrimoire:
         # Image storage
         self.intro_image = None
         self.character_images = {}
+        self.song_images = {}
         
         self.setup_styles()
         self.create_main_website()
@@ -867,7 +881,7 @@ class AveMujicaLogicGrimoire:
         
         for text, section_id in sections:
             btn = tk.Button(nav_center, text=text,
-                command=lambda s=section_id: self.scroll_to_section(s),
+                command=lambda s=section_id: self.section_manager.scroll_to(s),
                 bg=COLORS['wine'], fg=COLORS['gold'],
                 font=('Georgia', 11, 'bold'), relief='raised',
                 borderwidth=2, padx=20, pady=8, cursor='hand2')
@@ -888,6 +902,17 @@ class AveMujicaLogicGrimoire:
                              font=('Georgia', 11, 'bold'), relief='raised',
                              borderwidth=2, padx=20, pady=8, cursor='hand2')
         reset_btn.pack(side=tk.LEFT, padx=10)
+    
+    def scroll_to_section(self, section_id):
+        """Scroll to a specific section"""
+        if section_id == 0:  # Intro
+            self.canvas.yview_moveto(0)
+        elif section_id == 1:  # Truth Cathedral
+            self.canvas.yview_moveto(0.2)
+        elif section_id == 2:  # Character Encounters
+            self.canvas.yview_moveto(0.45)
+        elif section_id == 3:  # 16 Gates
+            self.canvas.yview_moveto(0.7)
         
     def open_reset_menu(self):
         """Open reset menu"""
@@ -1640,16 +1665,19 @@ class AveMujicaLogicGrimoire:
         self.update_songs_display()
     
     def update_songs_display(self):
-        """Update the unlocked songs display"""
+        """Update the unlocked songs display with full song information"""
         if not hasattr(self.quiz_manager, 'songs_container') or not self.quiz_manager.songs_container:
             return
         
+        # Clear previous display
         for widget in self.quiz_manager.songs_container.winfo_children():
             widget.destroy()
         
+        # Center the cards grid
         cards_grid = tk.Frame(self.quiz_manager.songs_container, bg=COLORS['ebony'])
         cards_grid.pack(expand=True)
         
+        # Create cards in a grid (4 per row)
         row_frame = None
         for i, song in enumerate(self.ave_mujica_songs[:16]):
             if i % 4 == 0:
@@ -1657,31 +1685,108 @@ class AveMujicaLogicGrimoire:
                 row_frame.pack(fill=tk.X, pady=2)
             
             locked = song not in self.unlocked_songs
-            
+
+            # Create card
             card = tk.Frame(row_frame, bg=COLORS['deep_red'] if locked else song['color'],
-                          bd=2, relief='raised', width=200, height=100)
+                          bd=2, relief='raised', width=250, height=550)
             card.pack(side=tk.LEFT, padx=4, pady=4)
             card.pack_propagate(False)
             
             inner = tk.Frame(card, bg=COLORS['ebony'], bd=1, relief='sunken')
             inner.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
             
-            status = "🔒" if locked else "🔓"
-            tk.Label(inner, text=status,
-                    font=('Georgia', 15), bg=COLORS['ebony'],
-                    fg=COLORS['deep_red'] if locked else COLORS['gold']).pack()
-            
-            title = song['title'][:35] + "..." if len(song['title']) > 35 else song['title']
-            tk.Label(inner, text=title,
-                    font=('Georgia', 10, 'bold'), bg=COLORS['ebony'],
-                      fg=COLORS['cream'] if locked else COLORS['gold'],
-                wraplength=200).pack(pady=2)  # Add wraplength to handle long titles
-            
-            if not locked:
-                tk.Label(inner, text=song['operation'],
-                        font=('Georgia', 8, 'italic'), bg=COLORS['ebony'],
-                        fg=COLORS['periwinkle']).pack(pady=(0,5))
-    
+            if locked:
+                # LOCKED - Show lock icon and placeholder
+                tk.Label(inner, text="🔒", 
+                        font=('Georgia', 24), bg=COLORS['ebony'],
+                        fg=COLORS['deep_red']).pack(pady=(20, 5))
+                tk.Label(inner, text="???", 
+                        font=('Georgia', 15, 'bold'), bg=COLORS['ebony'],
+                        fg=COLORS['cream']).pack()
+                tk.Label(inner, text="Locked", 
+                        font=('Georgia', 15, 'italic'), bg=COLORS['ebony'],
+                        fg=COLORS['periwinkle']).pack()
+            else:
+                # UNLOCKED - Try to show image, fallback to text
+                image_path = f'assets/images/songs/{song["image_file"]}'
+                
+                if os.path.exists(image_path):
+                    try:
+                        # Load and resize image
+                        pil_image = Image.open(image_path)
+                        pil_image = pil_image.resize((220, 180), Image.Resampling.LANCZOS)
+                        photo = ImageTk.PhotoImage(pil_image)
+                        
+                        # Store reference
+                        if not hasattr(self, 'song_images'):
+                            self.song_images = {}
+                        self.song_images[song['title']] = photo
+                        
+                        # Display image
+                        img_label = tk.Label(inner, image=photo, bg=COLORS['ebony'])
+                        img_label.pack(pady=(5, 2))
+                        
+                    except Exception as e:
+                        print(f"Could not load image for {song['title']}: {e}")
+                        # Show text placeholder if image fails
+                        tk.Label(inner, text="[NO IMAGE]", 
+                                font=('Georgia', 20, 'bold'), bg=COLORS['ebony'],
+                                fg=COLORS['gold']).pack(pady=(20, 5))
+                else:
+                    # No image file, show text placeholder
+                    print(f"Image not found: {image_path}")
+                    tk.Label(inner, text="[NO IMAGE]", 
+                            font=('Georgia', 20, 'bold'), bg=COLORS['ebony'],
+                            fg=COLORS['gold']).pack(pady=(20, 5))
+                
+                # SONG TITLE
+                title_label = tk.Label(inner, text=song['title'],
+                                      font=('Georgia', 20, 'bold'), bg=COLORS['ebony'],
+                                      fg=COLORS['gold'], wraplength=180, justify=tk.CENTER)
+                title_label.pack(pady=(2, 1))
+                
+                # OPERATION
+                tk.Label(inner, text=f"({song['operation']})",
+                        font=('Georgia', 11, 'italic'), bg=COLORS['ebony'],
+                        fg=COLORS['periwinkle']).pack(pady=(0, 2))
+                
+                # MEANING
+                meaning_text = song['meaning'][:85] + "..." if len(song['meaning']) > 85 else song['meaning']
+                tk.Label(inner, text=meaning_text,
+                        font=('Georgia', 15), bg=COLORS['ebony'],
+                        fg=COLORS['cream'], wraplength=180, justify=tk.CENTER).pack(pady=(1, 1))
+                
+                # LYRIC
+                lyric_text = song['lyric'][:80] + "..." if len(song['lyric']) > 80 else song['lyric']
+                tk.Label(inner, text=f"\"{lyric_text}\"",
+                        font=('Georgia', 15, 'italic'), bg=COLORS['ebony'],
+                        fg=COLORS['periwinkle'], wraplength=180, justify=tk.CENTER).pack(pady=(1, 3))
+
+    def _show_song_text_fallback(self, parent, song):
+        """Show text-based song display with full information when image is not available"""
+        # SONG TITLE
+        title_label = tk.Label(parent, text=song['title'],
+                              font=('Georgia', 10, 'bold'), bg=COLORS['ebony'],
+                              fg=COLORS['gold'], wraplength=180, justify=tk.CENTER)
+        title_label.pack(pady=(10, 1))
+        
+        # OPERATION
+        tk.Label(parent, text=f"({song['operation']})",
+                font=('Georgia', 8, 'italic'), bg=COLORS['ebony'],
+                fg=COLORS['periwinkle']).pack(pady=(0, 3))
+        
+        # MEANING
+        meaning_text = song['meaning'][:45] + "..." if len(song['meaning']) > 45 else song['meaning']
+        tk.Label(parent, text=meaning_text,
+                font=('Georgia', 6), bg=COLORS['ebony'],
+                fg=COLORS['cream'], wraplength=180, justify=tk.CENTER).pack(pady=(2, 2))
+        
+        # LYRIC
+        lyric_text = song['lyric'][:40] + "..." if len(song['lyric']) > 40 else song['lyric']
+        tk.Label(parent, text=f"\"{lyric_text}\"",
+                font=('Georgia', 5, 'italic'), bg=COLORS['ebony'],
+                fg=COLORS['periwinkle'], wraplength=180, justify=tk.CENTER).pack(pady=(2, 5))
+
     def create_victorian_status(self, parent):
         """Create the status bar"""
         status_bar = tk.Frame(parent, bg=COLORS['deep_red'], height=40)
@@ -1714,15 +1819,3 @@ class AveMujicaLogicGrimoire:
         tk.Label(status_center, text=random.choice(quotes),
                 fg=COLORS['gold'], bg=COLORS['deep_red'],
                 font=('Georgia', 9, 'italic')).pack(side=tk.LEFT, padx=10)
-    
-    # Music control methods
-    def scroll_to_section(self, section_id):
-        """Scroll to a specific section"""
-        if section_id == 0:  # Intro
-            self.canvas.yview_moveto(0)
-        elif section_id == 1:  # Truth Cathedral
-            self.canvas.yview_moveto(0.2)
-        elif section_id == 2:  # Character Encounters
-            self.canvas.yview_moveto(0.45)
-        elif section_id == 3:  # 16 Gates
-            self.canvas.yview_moveto(0.7)
