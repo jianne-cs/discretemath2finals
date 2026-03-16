@@ -261,11 +261,26 @@ class SongsData:
     
     def __init__(self):
         self.songs = [
+            # Major Releases
+            {
+                'title': 'Ave Mujica',
+                'operation': 'NAND',
+                'meaning': 'The band\'s anthem - not all is as it seems',
+                'color': '#5C3A3A',
+                'lyric': "We are not merely what you see before you..."
+            },
+            {
+                'title': 'KiLLKiSS',
+                'operation': 'XOR',
+                'meaning': 'Kill or kiss - exactly one must be chosen',
+                'color': '#8B0000',
+                'lyric': "The line between love and death blurs..."
+            },
             {
                 'title': 'Mas?uerade Rhapsody Re?uest',
                 'operation': 'AND',
                 'meaning': 'Both masks and reality must be true',
-                'color': '#8B0000',
+                'color': '#6B4C4C',
                 'lyric': "In this masquerade, only when both hearts beat as one..."
             },
             {
@@ -276,27 +291,6 @@ class SongsData:
                 'lyric': "A birthday in darkness, where shadows or light may prevail..."
             },
             {
-                'title': 'Symbol I : Δ',
-                'operation': 'XOR',
-                'meaning': 'The symbol changes - exactly one interpretation',
-                'color': '#4A2C2C',
-                'lyric': "Delta of change, where exactly one path reveals truth..."
-            },
-            {
-                'title': 'Ave Mujica',
-                'operation': 'NAND',
-                'meaning': 'The band\'s anthem - not all is as it seems',
-                'color': '#5C3A3A',
-                'lyric': "We are not merely what you see before you..."
-            },
-            {
-                'title': 'Gehaburn',
-                'operation': 'Implication',
-                'meaning': 'If you burn, then you must feel the pain',
-                'color': '#6B4C4C',
-                'lyric': "If the flame consumes, then despair follows..."
-            },
-            {
                 'title': 'Angles',
                 'operation': 'XNOR',
                 'meaning': 'Angels exist if and only if we believe',
@@ -304,81 +298,94 @@ class SongsData:
                 'lyric': "Heaven and earth are one and the same..."
             },
             {
-                'title': 'Fascination',
-                'operation': 'NOR',
-                'meaning': 'Neither logic nor emotion can explain fascination',
-                'color': '#342323',
-                'lyric': "Neither reason nor passion holds sway here..."
-            },
-            {
-                'title': 'Kizuna Music ???',
-                'operation': 'Converse Implication',
-                'meaning': 'Bonds of music when Q implies P',
-                'color': '#8B6B6B',
-                'lyric': "If the music binds us, then our hearts must be true..."
-            },
-            {
-                'title': 'Imprisoned',
+                'title': 'Imprisoned XII',
                 'operation': 'Contradiction',
                 'meaning': 'Freedom is impossible - always false',
                 'color': '#1A1A1A',
-                'lyric': "No escape, no truth, only endless chains..."
+                'lyric': "Twelve chains bind the soul in eternal confinement..."
             },
             {
-                'title': "Choir 'S' Choir",
+                'title': 'Crucifix X',
+                'operation': 'IMPLICATION',
+                'meaning': 'If you bear the cross, then you must suffer',
+                'color': '#4A2C2C',
+                'lyric': "The tenth sacrifice carries the weight of all..."
+            },
+            
+            {
+                'title': 'Ether',
+                'operation': 'Tautology',
+                'meaning': 'The fifth element - always true, always present',
+                'color': '#C4A962',
+                'lyric': "Beyond the four, the void speaks eternal truths..."
+            },
+            
+            # Symbol Series
+            {
+                'title': 'Symbol I: △ Fire',
+                'operation': 'Material Implication',
+                'meaning': 'Fire transforms - if ignited, then it burns',
+                'color': '#C44C4C',
+                'lyric': "The triangle burns with consuming passion..."
+            },
+            {
+                'title': 'Symbol II: 🜁 Air',
+                'operation': 'Converse Implication',
+                'meaning': 'Wind carries - if it flows, then it moves',
+                'color': '#6BA5B0',
+                'lyric': "Invisible forces guide our fate..."
+            },
+            {
+                'title': 'Symbol III: ▽ Water',
+                'operation': 'Material Nonimplication',
+                'meaning': 'Water carves - only when P without Q',
+                'color': '#3A6B8C',
+                'lyric': "Flowing tears shape the stone of memory..."
+            },
+            {
+                'title': 'Symbol IV: 🜃 Earth',
+                'operation': 'Converse Nonimplication',
+                'meaning': 'Earth grounds - only when Q without P',
+                'color': '#6B4C2C',
+                'lyric': "The soil remembers what we forget..."
+            },
+            
+            
+            # Other Songs
+            {
+                'title': 'DIVINE',
+                'operation': 'BICONDITIONAL',
+                'meaning': 'Divine truth exists if and only if we have faith',
+                'color': '#C49A6C',
+                'lyric': "The gods speak only when we listen..."
+            },
+            {
+                'title': 'Choir \'S\' Choir',
                 'operation': 'Projection P',
                 'meaning': 'The choir sings only of P',
                 'color': '#5D4A4A',
-                'lyric': "Voices rise, singing only of what was..."
+                'lyric': "Many voices, one truth, all singing of what was..."
             },
             {
-                'title': 'Nihilist',
-                'operation': 'Tautology',
-                'meaning': 'Nothing matters - always true',
-                'color': '#2C2C2C',
-                'lyric': "In emptiness, all truths are one..."
+                'title': 'Alter Ego',
+                'operation': 'XOR',
+                'meaning': 'True self or false self - exactly one can exist',
+                'color': '#8A6E8E',
+                'lyric': "The mask and the face cannot both be real..."
             },
             {
-                'title': 'Jiku: no Mosaik',
-                'operation': 'Projection Q',
-                'meaning': 'Time\'s mosaic depends only on Q',
-                'color': '#4D3939',
-                'lyric': "The pattern of time reveals itself through one lens..."
+                'title': 'Sophie',
+                'operation': 'AND',
+                'meaning': 'Wisdom requires both knowledge AND understanding',
+                'color': '#9E7B9B',
+                'lyric': "In the pursuit of truth, both heart and mind must speak..."
             },
             {
-                'title': 'Viking',
-                'operation': 'Converse Nonimplication',
-                'meaning': 'The voyage takes only when Q without P',
-                'color': '#3B2F2F',
-                'lyric': "Sails unfurl only when the wind blows without warning..."
-            },
-            {
-                'title': 'Tsubomi no Melody',
-                'operation': 'Material Nonimplication',
-                'meaning': 'The bud\'s melody blooms only when P without Q',
-                'color': '#6A4E4E',
-                'lyric': "The flower opens only when conditions are pure..."
-            },
-            {
-                'title': 'Haruhii no Uso',
-                'operation': 'Negation of P',
-                'meaning': 'Spring\'s lies deny P',
-                'color': '#8C6D6D',
-                'lyric': "Deceptions bloom when truth is denied..."
-            },
-            {
-                'title': 'Vampire no Yuuutsu',
-                'operation': 'Negation of Q',
-                'meaning': 'The vampire\'s melancholy denies Q',
-                'color': '#240F0F',
-                'lyric': "In eternal night, consequence is denied..."
-            },
-            {
-                'title': 'Koukai no Nai Uso',
-                'operation': 'Tautology',
-                'meaning': 'Lies without regret are always true',
-                'color': '#3E2323',
-                'lyric': "Falsehoods without remorse, eternally true..."
+                'title': 'Deep Into The Forest',
+                'operation': 'NOR',
+                'meaning': 'Neither path leads where you expect',
+                'color': '#2C4A2C',
+                'lyric': "Lost in the woods where no trail is true..."
             }
         ]
     
