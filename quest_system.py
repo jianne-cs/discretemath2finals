@@ -557,17 +557,12 @@ class CharacterQuestSystem:
         quest_window.transient(self.parent.root)
         quest_window.grab_set()
         
-        # Position window based on preferred side
-        if self.window_side == 'center':
-            self.window_manager.center_window(quest_window, 1000, 700)
-        else:
-            self.window_manager.position_window_on_side(
-                quest_window, self.parent.root, 1000, 700, self.window_side
-            )
-        
+       # ALWAYS CENTER the window (ignore window_side setting)
+        self.window_manager.center_window(quest_window, 880, 900)
+    
         self.active_quest_window = quest_window
-        
-        # Add reset button to quest window
+    
+    # Add reset button to quest window
         self._add_quest_window_reset(quest_window, character)
         
         # Main container
@@ -847,7 +842,7 @@ explain why both implications are valid despite the impossible choice.
             self.window_manager.center_window(final_window, 1000, 800)
         else:
             self.window_manager.position_window_on_side(
-                final_window, self.parent.root, 1000, 800, self.window_side
+                final_window, self.parent.root, 1000, 700, self.window_side
             )
         
         # Scrollable content
