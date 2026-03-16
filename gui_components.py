@@ -5,6 +5,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox, font
 import random
 from datetime import datetime
+from PIL import Image, ImageTk
+import os
 
 from config import COLORS
 from tutorial import LogicTutorial
@@ -13,6 +15,7 @@ from character_quests import (
     UmiriNORQuest, NyamuNANDQuest, AveMujicaFinalQuest
 )
 from quest_system import CharacterQuestSystem, WindowManager, UIBuilder, PuzzleManager, QuestStatus, QuestStatusInfo
+
 
 
 class SectionManager:
@@ -34,7 +37,7 @@ class SectionManager:
 
 
 class CharacterData:
-    """Manages character data"""
+    """Manages character data with image filenames"""
     
     def __init__(self):
         self.data = {
@@ -47,7 +50,8 @@ class CharacterData:
                 'description': 'Implication is false ONLY when the first is true and second is false.',
                 'quote': "IF a promise is made, THEN it must be kept... but at what cost?",
                 'situation': "Oblivionis sits at her keyboard, torn between duty and desire...",
-                'image': '🎹'
+                'image': '🎹',
+                'image_file': 'sakiko.png'
             },
             'Uika Misumi': {
                 'role': 'Doloris',
@@ -58,7 +62,8 @@ class CharacterData:
                 'description': 'XOR is true when exactly one statement is true.',
                 'quote': "Love must be exclusive... or so I thought.",
                 'situation': "Doloris's voice echoes with the pain of isolation...",
-                'image': '🎸'
+                'image': '🎸',
+                'image_file': 'uika.png'
             },
             'Mutsumi Wakaba': {
                 'role': 'Mortis',
@@ -69,7 +74,8 @@ class CharacterData:
                 'description': 'Negation reverses the truth value of a statement.',
                 'quote': "I am NOT who they want me to be... but who am I?",
                 'situation': "Mortis's shadow moves independently of her body...",
-                'image': '🎸'
+                'image': '🎸',
+                'image_file': 'mutsumi.png'
             },
             'Umiri Yahata': {
                 'role': 'Timoris',
@@ -80,7 +86,8 @@ class CharacterData:
                 'description': 'NOR is true only when both statements are false.',
                 'quote': "If I belong to nothing, nothing can reject me...",
                 'situation': "Timoris's bass resonates with the fear of commitment...",
-                'image': '🎸'
+                'image': '🎸',
+                'image_file': 'umiri.png'
             },
             'Nyamu Yūtenji': {
                 'role': 'Amoris',
@@ -91,7 +98,8 @@ class CharacterData:
                 'description': 'NAND is false only when both statements are true.',
                 'quote': "I only feel real when I'm seen AND approved...",
                 'situation': "Amoris's drumming seeks validation from empty screens...",
-                'image': '🥁'
+                'image': '🥁',
+                'image_file': 'nyamu.png'
             }
         }
     
@@ -760,16 +768,20 @@ class AveMujicaLogicGrimoire:
         final_quest = AveMujicaFinalQuest(self)
         self.quest_system.set_quests(quests_dict, final_quest)
         
-        # UI references - IMPORTANT: Initialize all UI attributes
+        # UI references
         self.cards_frame = None
         self.canvas = None
         self.scrollable_frame = None
         self.section_manager = None
         self.songs_frame = None
         
+        # Image storage
+        self.intro_image = None
+        self.character_images = {}
+        
         self.setup_styles()
         self.create_main_website()
-    
+        
     def setup_styles(self):
         """Configure custom gothic Victorian styles"""
         style = ttk.Style()
@@ -848,7 +860,7 @@ class AveMujicaLogicGrimoire:
         
         for text, section_id in sections:
             btn = tk.Button(nav_center, text=text,
-                command=lambda s=section_id: self.section_manager.scroll_to(s),
+                command=lambda s=section_id: self.scroll_to_section(s),
                 bg=COLORS['wine'], fg=COLORS['gold'],
                 font=('Georgia', 11, 'bold'), relief='raised',
                 borderwidth=2, padx=20, pady=8, cursor='hand2')
@@ -869,7 +881,7 @@ class AveMujicaLogicGrimoire:
                              font=('Georgia', 11, 'bold'), relief='raised',
                              borderwidth=2, padx=20, pady=8, cursor='hand2')
         reset_btn.pack(side=tk.LEFT, padx=10)
-    
+        
     def open_reset_menu(self):
         """Open reset menu"""
         reset_window = tk.Toplevel(self.root)
@@ -1013,7 +1025,7 @@ class AveMujicaLogicGrimoire:
         self.create_gates_of_truth_section(content_container)
     
     def create_intro_section(self, parent):
-        """Create the intro section"""
+        """Create the intro section with an image banner"""
         section = tk.Frame(parent, bg=COLORS['shadow'])
         section.pack(fill=tk.X, pady=30, padx=50)
         
@@ -1032,6 +1044,36 @@ class AveMujicaLogicGrimoire:
         
         tk.Label(content, text="〚 The Complete Logic Grimoire 〛",
                 font=('Georgia', 16, 'italic'), fg=COLORS['periwinkle'], bg=COLORS['ebony']).pack()
+        
+        # ADD IMAGE HERE - before the welcome text
+        image_frame = tk.Frame(content, bg=COLORS['ebony'])
+        image_frame.pack(pady=20)
+        
+        # Try to load and display the intro image
+        image_path = 'assets/images/intro_banner.png'
+        if os.path.exists(image_path):
+            try:
+                # Load and resize image
+                pil_image = Image.open(image_path)
+                # Resize to fit (adjust dimensions as needed)
+                pil_image = pil_image.resize((650, 822), Image.Resampling.LANCZOS)
+                self.intro_image = ImageTk.PhotoImage(pil_image)  # Keep reference
+                
+                # Display image
+                image_label = tk.Label(image_frame, image=self.intro_image, bg=COLORS['ebony'])
+                image_label.pack()
+            except Exception as e:
+                print(f"Could not load intro image: {e}")
+                # Fallback to text if image fails
+                tk.Label(image_frame, text="[AVE MUJICA BANNER]", 
+                        font=('Georgia', 20, 'bold'), fg=COLORS['gold'], 
+                        bg=COLORS['ebony']).pack()
+        else:
+            # Fallback if image doesn't exist
+            tk.Label(image_frame, text="[AVE MUJICA BANNER]", 
+                    font=('Georgia', 20, 'bold'), fg=COLORS['gold'], 
+                    bg=COLORS['ebony']).pack()
+            print(f"Image not found: {image_path}")
         
         # Welcome message
         welcome_text = "Welcome to the Gothic Masquerade of Logic...\n\n" + \
@@ -1326,7 +1368,7 @@ class AveMujicaLogicGrimoire:
         # Quest progress summary
         self._create_quest_progress_summary(content)
         
-        # Cards frame - IMPORTANT: This creates the cards_frame
+        # Cards frame
         self.cards_frame = tk.Frame(content, bg=COLORS['ebony'])
         self.cards_frame.pack(pady=20)
         
@@ -1363,12 +1405,10 @@ class AveMujicaLogicGrimoire:
     
     def refresh_character_encounters(self):
         """Refresh the character cards to show updated quest status"""
-        # Add error checking
         if not hasattr(self, 'cards_frame') or self.cards_frame is None:
             print("Warning: cards_frame not initialized yet")
             return
         
-        # Check if cards_frame has been destroyed
         try:
             if not self.cards_frame.winfo_exists():
                 print("Warning: cards_frame no longer exists")
@@ -1392,7 +1432,6 @@ class AveMujicaLogicGrimoire:
                 col = 0
                 row += 1
         
-        # Force update
         self.cards_frame.update_idletasks()
     
     def create_gates_of_truth_section(self, parent):
@@ -1510,7 +1549,7 @@ class AveMujicaLogicGrimoire:
                 font=('Georgia', 9, 'bold'),
                 relief='raised',
                 borderwidth=3,
-                width=20,
+                width=25,
                 height=3,
                 cursor='hand2',
                 command=lambda op_name=op['name']: self.quiz_manager.select_option(op_name))
@@ -1547,14 +1586,12 @@ class AveMujicaLogicGrimoire:
             padx=30,
             pady=8,
             cursor='hand2',
-            state=tk.DISABLED)  # Initially disabled until an option is selected
+            state=tk.DISABLED)
         self.quiz_manager.submit_btn.pack()
         
-        # Add hover effect for submit button
         self.quiz_manager.submit_btn.bind("<Enter>", lambda e: self.quiz_manager.submit_btn.config(bg=COLORS['button_hover']))
         self.quiz_manager.submit_btn.bind("<Leave>", lambda e: self.quiz_manager.submit_btn.config(bg=COLORS['deep_red']))
         
-        # Input method hints
         hints_frame = tk.Frame(quiz_frame, bg=COLORS['ebony'])
         hints_frame.pack(pady=5)
         
@@ -1564,7 +1601,6 @@ class AveMujicaLogicGrimoire:
             fg=COLORS['periwinkle'],
             bg=COLORS['ebony']).pack()
         
-        # Restart button
         self.quiz_manager.restart_btn = tk.Button(quiz_frame,
             text="🔄  Restart Grimoire  🔄",
             command=self.quiz_manager.restart_quiz,
@@ -1578,10 +1614,7 @@ class AveMujicaLogicGrimoire:
             cursor='hand2')
         self.quiz_manager.restart_btn.pack(pady=10)
         
-        # Create grimoire display
         self.create_grimoire_display(quiz_frame)
-        
-        # Initialize quiz
         self.quiz_manager.new_quiz()
     
     def create_grimoire_display(self, parent):
@@ -1591,15 +1624,12 @@ class AveMujicaLogicGrimoire:
                                       font=('Georgia', 10, 'bold'))
         grimoire_frame.pack(fill=tk.X, pady=10, padx=20)
         
-        # Center the song cards
         cards_center = tk.Frame(grimoire_frame, bg=COLORS['ebony'])
         cards_center.pack(expand=True)
         
-        # Create frame for song cards
         self.quiz_manager.songs_container = tk.Frame(cards_center, bg=COLORS['ebony'])
         self.quiz_manager.songs_container.pack(fill=tk.X, pady=5)
         
-        # Create song cards
         self.update_songs_display()
     
     def update_songs_display(self):
@@ -1607,48 +1637,43 @@ class AveMujicaLogicGrimoire:
         if not hasattr(self.quiz_manager, 'songs_container') or not self.quiz_manager.songs_container:
             return
         
-        # Clear previous display
         for widget in self.quiz_manager.songs_container.winfo_children():
             widget.destroy()
         
-        # Center the cards grid
         cards_grid = tk.Frame(self.quiz_manager.songs_container, bg=COLORS['ebony'])
         cards_grid.pack(expand=True)
         
-        # Create cards in a grid (4 per row)
         row_frame = None
-        for i, song in enumerate(self.ave_mujica_songs[:16]):  # Only show first 16 songs
+        for i, song in enumerate(self.ave_mujica_songs[:16]):
             if i % 4 == 0:
                 row_frame = tk.Frame(cards_grid, bg=COLORS['ebony'])
                 row_frame.pack(fill=tk.X, pady=2)
             
             locked = song not in self.unlocked_songs
             
-            # Create card
             card = tk.Frame(row_frame, bg=COLORS['deep_red'] if locked else song['color'],
-                          bd=2, relief='raised', width=180, height=70)
+                          bd=2, relief='raised', width=200, height=100)
             card.pack(side=tk.LEFT, padx=4, pady=4)
             card.pack_propagate(False)
             
             inner = tk.Frame(card, bg=COLORS['ebony'], bd=1, relief='sunken')
             inner.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
             
-            # Locked/unlocked indicator
             status = "🔒" if locked else "🔓"
             tk.Label(inner, text=status,
-                    font=('Georgia', 9), bg=COLORS['ebony'],
+                    font=('Georgia', 15), bg=COLORS['ebony'],
                     fg=COLORS['deep_red'] if locked else COLORS['gold']).pack()
             
-            # Song title (truncated if too long)
-            title = song['title'][:12] + "..." if len(song['title']) > 12 else song['title']
+            title = song['title'][:35] + "..." if len(song['title']) > 35 else song['title']
             tk.Label(inner, text=title,
-                    font=('Georgia', 7, 'bold'), bg=COLORS['ebony'],
-                    fg=COLORS['cream'] if locked else COLORS['gold']).pack()
+                    font=('Georgia', 10, 'bold'), bg=COLORS['ebony'],
+                      fg=COLORS['cream'] if locked else COLORS['gold'],
+                wraplength=200).pack(pady=2)  # Add wraplength to handle long titles
             
             if not locked:
                 tk.Label(inner, text=song['operation'],
-                        font=('Georgia', 6, 'italic'), bg=COLORS['ebony'],
-                        fg=COLORS['periwinkle']).pack()
+                        font=('Georgia', 8, 'italic'), bg=COLORS['ebony'],
+                        fg=COLORS['periwinkle']).pack(pady=(0,5))
     
     def create_victorian_status(self, parent):
         """Create the status bar"""
@@ -1682,3 +1707,15 @@ class AveMujicaLogicGrimoire:
         tk.Label(status_center, text=random.choice(quotes),
                 fg=COLORS['gold'], bg=COLORS['deep_red'],
                 font=('Georgia', 9, 'italic')).pack(side=tk.LEFT, padx=10)
+    
+    # Music control methods
+    def scroll_to_section(self, section_id):
+        """Scroll to a specific section"""
+        if section_id == 0:  # Intro
+            self.canvas.yview_moveto(0)
+        elif section_id == 1:  # Truth Cathedral
+            self.canvas.yview_moveto(0.2)
+        elif section_id == 2:  # Character Encounters
+            self.canvas.yview_moveto(0.45)
+        elif section_id == 3:  # 16 Gates
+            self.canvas.yview_moveto(0.7)

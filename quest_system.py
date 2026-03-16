@@ -393,8 +393,11 @@ class CharacterQuestSystem:
         self.puzzle_manager = PuzzleManager()
         self.final_shown = False
         self.progress_file = "quest_progress.json"
-        self.window_side = 'right'  # Default window position: 'left', 'right', 'top', 'bottom', 'center'
-        
+        self.window_side = 'right'
+        self.character_images = {}  # ADD THIS LINE to store image references
+    
+    # ... rest of the class methods remain the same
+
     def set_quests(self, quests_dict: Dict[str, Any], final_quest) -> None:
         """Set the quests after imports"""
         self.quests = quests_dict

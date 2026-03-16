@@ -5,7 +5,7 @@ COLORS = {
     # Primary palette
     'ebony': '#0A0A0A',           # Pure black for deep backgrounds
     'shadow': '#1A1623',          # Deep purple-black for shadows
-    'dark_purple': '#3E3949',     # Main background purple
+    'dark_purple': '#3E3949',     # Dark Purple
     'light_purple': '#B692BA',    # Light accent purple
     
     # Accent colors
