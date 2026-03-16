@@ -1803,7 +1803,7 @@ explain why both implications are valid despite the impossible choice.
         dialogue_frame = tk.Frame(parent, bg=COLORS['cream'], bd=3, relief='raised')
         dialogue_frame.pack(fill=tk.X, pady=10, padx=20)
         
-        dialogue_text = tk.Text(dialogue_frame, height=25,  # Increased from 8 to 25
+        dialogue_text = tk.Text(dialogue_frame, height=35,  # Increased from 8 to 25
                                bg=COLORS['cream'], fg=COLORS['deep_red'],
                                font=('Georgia', 11), wrap=tk.WORD,
                                padx=20, pady=20)

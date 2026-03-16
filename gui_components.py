@@ -1688,7 +1688,7 @@ class AveMujicaLogicGrimoire:
 
             # Create card
             card = tk.Frame(row_frame, bg=COLORS['deep_red'] if locked else song['color'],
-                          bd=2, relief='raised', width=250, height=550)
+                          bd=2, relief='raised', width=250, height=650)
             card.pack(side=tk.LEFT, padx=4, pady=4)
             card.pack_propagate(False)
             

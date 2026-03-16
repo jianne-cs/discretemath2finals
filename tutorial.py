@@ -1,202 +1,363 @@
 # tutorial.py
-# Comprehensive tutorial for learning logical prepositions
+# Comprehensive tutorial for learning logical prepositions - Beginner Friendly Edition
 
 class LogicTutorial:
-    """Comprehensive tutorial for learning logical prepositions"""
+    """Comprehensive tutorial for learning logical prepositions - designed for absolute beginners"""
     
     @staticmethod
     def get_tutorial_content():
         return {
             'title': "📚 THE LOGIC GRIMOIRE - A BEGINNER'S GUIDE 📚",
             'introduction': """
-Welcome, seeker of truth, to the Logic Grimoire! Before you embark on your journey through the 16 Gates of Truth,
-you must first understand the fundamental prepositions that govern logical thought. Each preposition is like a magical
-spell that transforms truth values in specific ways.
+🌟 WELCOME, BRAVE BEGINNER! 🌟
 
-In this cathedral of logic, we study how two simple propositions (P and Q) can be combined to create new truths.
-Each proposition can be either TRUE (T) or FALSE (F). When we combine them, we get 4 possible combinations:
-• P=F, Q=F
-• P=F, Q=T  
-• P=T, Q=F
-• P=T, Q=T
+Have you ever made a decision? Said "if this happens, then that will happen"? 
+Congratulations - you've already used logic! You just didn't know it had fancy names.
 
-Let us explore each logical operation through the lens of our beloved Ave Mujica members...
+WHAT IS LOGIC?
+Logic is simply a way of thinking about truth and falsehood. 
+Every statement in the world can be either TRUE or FALSE:
+• "The sun is shining" → TRUE or FALSE
+• "I am hungry" → TRUE or FALSE
+• "2 + 2 = 5" → FALSE
+
+In this grimoire, we use two basic statements called P and Q.
+They can be any statements you want! Then we combine them using "logical operations"
+(think of them as recipes for combining truths).
+
+THE FOUR POSSIBLE WORLDS:
+Since P can be TRUE or FALSE, and Q can be TRUE or FALSE, there are only 4 possibilities:
+┌─────────┬─────────┐
+│    P    │    Q    │
+├─────────┼─────────┤
+│  FALSE  │  FALSE  │
+│  FALSE  │  TRUE   │
+│  TRUE   │  FALSE  │
+│  TRUE   │  TRUE   │
+└─────────┴─────────┘
+
+That's it! Just 4 combinations. Every logical operation is just a rule that tells us
+whether the result is TRUE or FALSE for each of these 4 combinations.
+
+Let's explore each operation through the stories of our Ave Mujica members...
 """,
             'sections': [
                 {
-                    'title': "1️⃣ CONJUNCTION (AND) - SAKIKO'S TRUTH",
+                    'title': "1️⃣ AND (∧) - SAKIKO'S TRUTH",
                     'symbol': '∧',
                     'character': 'Sakiko Togawa (Oblivionis)',
+                    'easy_rule': 'BOTH must be true',
+                    'everyday_example': '"I will be happy IF I have music AND I have friendship"',
                     'description': """
-CONJUNCTION is true ONLY when BOTH statements are true. Think of it as Sakiko's need for both memory AND oblivion
-to coexist. If either part is false, the whole becomes false.
+WHAT IS AND?
+AND is the strict one. It only says TRUE when EVERYTHING is true.
+If ANY part is false, the whole thing is false.
 
-Truth Table:
-P     Q     P ∧ Q
-F     F       F    (Neither true → False)
-F     T       F    (Only Q true → False)
-T     F       F    (Only P true → False)
-T     T       T    (Both true → True)
+Think of it like:
+• Making a sandwich: You need bread AND filling AND cheese. Missing any? No sandwich!
+• Going to a party: You need an invitation AND transportation AND good mood. Missing one? Can't go!
 
-In life: "I will be happy IF AND ONLY IF I have both music AND friendship."
+TRUTH TABLE (easy memory: only row 4 is TRUE):
+┌───────┬───────┬─────────┐
+│   P   │   Q   │  P ∧ Q  │
+├───────┼───────┼─────────┤
+│ False │ False │  False  │ ← Nothing true
+│ False │ True  │  False  │ ← Only Q true
+│ True  │ False │  False  │ ← Only P true
+│ True  │ True  │  True   │ ← BOTH true ✓
+└───────┴───────┴─────────┘
+
+SAKIKO'S STORY:
+Sakiko needs both her father's well-being AND her band's success. 
+If either fails, she feels her promise is broken. AND represents her struggle
+to make both things true at once.
 """,
-                    'example': "Example: 'It is raining AND it is cold' is only true if both conditions are met."
+                    'example': "Example: 'It is raining AND it is cold' → TRUE only if both actually happen."
                 },
                 {
-                    'title': "2️⃣ DISJUNCTION (OR) - UIKA'S CHOICE",
+                    'title': "2️⃣ OR (∨) - UIKA'S CHOICE",
                     'symbol': '∨',
                     'character': 'Uika Misumi (Doloris)',
+                    'easy_rule': 'At least ONE must be true',
+                    'everyday_example': '"I will have tea OR coffee"',
                     'description': """
-DISJUNCTION is true if AT LEAST ONE statement is true. Like Uika's world where she had either the ocean OR isolation,
-but never both. The only time it's false is when both are false.
+WHAT IS OR?
+OR is the relaxed one. It's TRUE if ANY of the statements are true.
+The only time it's FALSE is when EVERYTHING is false.
 
-Truth Table:
-P     Q     P ∨ Q
-F     F       F    (Both false → False)
-F     T       T    (Q true → True)
-T     F       T    (P true → True)
-T     T       T    (Both true → True)
+Think of it like:
+• Restaurant menu: You can order pizza OR pasta. Either is fine! Both is also fine!
+• Weekend plans: "I'll go to the beach OR the mountains" - as long as you go somewhere, you're happy.
 
-In life: "I will go to the park OR stay home" - either option makes it true.
+TRUTH TABLE (easy memory: only row 1 is FALSE):
+┌───────┬───────┬─────────┐
+│   P   │   Q   │  P ∨ Q  │
+├───────┼───────┼─────────┤
+│ False │ False │  False  │ ← Nothing true ✗
+│ False │ True  │  True   │ ← Q true ✓
+│ True  │ False │  True   │ ← P true ✓
+│ True  │ True  │  True   │ ← Both true ✓
+└───────┴───────┴─────────┘
+
+UIKA'S STORY:
+Uika grew up with only the ocean OR isolation - never both. 
+OR represents her world where having just ONE thing was the only possibility.
 """,
-                    'example': "Example: 'I will have tea OR coffee' is true if you have either (or both!)."
+                    'example': "Example: 'I will bring an umbrella OR wear a raincoat' → True if you do at least one."
                 },
                 {
-                    'title': "3️⃣ IMPLICATION (IF...THEN) - MUTSUMI'S PROMISE",
+                    'title': "3️⃣ IF...THEN (→) - MUTSUMI'S PROMISE",
                     'symbol': '→',
                     'character': 'Mutsumi Wakaba (Mortis)',
+                    'easy_rule': 'Only FALSE when TRUE → FALSE',
+                    'everyday_example': '"IF you study, THEN you will pass"',
                     'description': """
-IMPLICATION is false ONLY when the first statement is true AND the second is false. Think of it as a promise:
-"If P happens, THEN Q must happen." The only broken promise is when P happens but Q doesn't.
+WHAT IS IMPLICATION?
+This one confuses everyone at first! Think of it as a PROMISE:
+"If P happens, then Q MUST happen."
 
-Truth Table:
-P     Q     P → Q
-F     F       T    (Promise not triggered → Vacuously true)
-F     T       T    (Promise not triggered → Vacuously true)
-T     F       F    (PROMISE BROKEN! P happened but Q didn't)
-T     T       T    (Promise kept)
+The ONLY broken promise is when P happens (TRUE) but Q DOESN'T happen (FALSE).
+In all other cases, the promise is kept (or wasn't tested)!
 
-In life: "If you study, THEN you will pass" - only false if you study AND fail.
+Think of it like:
+• Parent's promise: "If you clean your room, THEN you get ice cream"
+  - You clean (TRUE), you get ice cream (TRUE) → Promise kept ✓
+  - You clean (TRUE), no ice cream (FALSE) → Promise broken! ✗ (only this is false)
+  - You don't clean (FALSE), you get ice cream anyway (TRUE) → Lucky you! ✓
+  - You don't clean (FALSE), no ice cream (FALSE) → Expected outcome ✓
+
+TRUTH TABLE (easy memory: only row 3 is FALSE):
+┌───────┬───────┬─────────┐
+│   P   │   Q   │  P → Q  │
+├───────┼───────┼─────────┤
+│ False │ False │  True   │ ← Promise not tested
+│ False │ True  │  True   │ ← Promise not tested
+│ True  │ False │  False  │ ← PROMISE BROKEN! ✗
+│ True  │ True  │  True   │ ← Promise kept ✓
+└───────┴───────┴─────────┘
+
+MUTSUMI'S STORY:
+Mutsumi struggles with expectations: "If I'm my mother's daughter, then I must be an actress."
+She feels the weight of this implication every day.
 """,
-                    'example': "Example: 'If it rains, then the ground will be wet' - only false if it rains and ground stays dry."
+                    'example': "Example: 'If it rains, the ground gets wet' → Only false if it rains AND ground stays dry."
                 },
                 {
-                    'title': "4️⃣ BICONDITIONAL (IF AND ONLY IF) - UMIRI'S BALANCE",
+                    'title': "4️⃣ IF AND ONLY IF (↔) - UMIRI'S BALANCE",
                     'symbol': '↔',
                     'character': 'Umiri Yahata (Timoris)',
+                    'easy_rule': 'Both must be the SAME',
+                    'everyday_example': '"You can go out IF AND ONLY IF you finish homework"',
                     'description': """
-BICONDITIONAL is true when BOTH statements have the SAME truth value. It's like Umiri's search for balance -
-either both true or both false, never mismatched.
+WHAT IS BICONDITIONAL?
+This is the "matchmaker" operation. It's TRUE when P and Q have the SAME truth value.
+Both true together, or both false together. No mixing allowed!
 
-Truth Table:
-P     Q     P ↔ Q
-F     F       T    (Both false → True)
-F     T       F    (Different → False)
-T     F       F    (Different → False)
-T     T       T    (Both true → True)
+Think of it like:
+• Light switch: The light is on IF AND ONLY IF the switch is up
+  - Switch up (TRUE), light on (TRUE) → ✓
+  - Switch up (TRUE), light off (FALSE) → ✗ (broken!)
+  - Switch down (FALSE), light off (FALSE) → ✓
+  - Switch down (FALSE), light on (TRUE) → ✗ (impossible!)
 
-In life: "You can go out IF AND ONLY IF you finish your homework" - both must align.
+TRUTH TABLE (easy memory: rows 1 and 4 are TRUE):
+┌───────┬───────┬─────────┐
+│   P   │   Q   │  P ↔ Q  │
+├───────┼───────┼─────────┤
+│ False │ False │  True   │ ← Both false ✓
+│ False │ True  │  False  │ ← Different ✗
+│ True  │ False │  False  │ ← Different ✗
+│ True  │ True  │  True   │ ← Both true ✓
+└───────┴───────┴─────────┘
+
+UMIRI'S STORY:
+Umiri seeks balance - either she truly belongs AND they truly want her,
+or she doesn't belong AND they don't want her. Mixed situations hurt.
 """,
-                    'example': "Example: 'The light is on IF AND ONLY IF the switch is up' - they must match."
+                    'example': "Example: 'The door is open IF AND ONLY IF the key is turned' → They must match."
                 },
                 {
-                    'title': "5️⃣ NEGATION (NOT) - NYAMU'S MASK",
+                    'title': "5️⃣ NOT (¬) - NYAMU'S MASK",
                     'symbol': '¬',
                     'character': 'Nyamu Yūtenji (Amoris)',
+                    'easy_rule': 'FLIP the truth value',
+                    'everyday_example': '"NOT happy" means sad',
                     'description': """
-NEGATION simply reverses the truth value. Like Nyamu's masks - what appears true may be false, and vice versa.
-It's the simplest but most powerful operation.
+WHAT IS NEGATION?
+This is the simplest - it just FLIPS the truth value.
+True becomes False. False becomes True. That's it!
 
-Truth Table:
-P     ¬P
-F      T    (False becomes True)
-T      F    (True becomes False)
+Think of it like:
+• Light switch: NOT(light on) means light is off
+• Temperature: NOT(hot) means cold
+• Your mood: NOT(happy) means you're not happy (sad, angry, tired, etc.)
 
-In life: "NOT happy" means you're unhappy. "NOT sad" means you're not sad.
+TRUTH TABLE (easy memory: it's the opposite):
+┌───────┬─────────┐
+│   P   │   ¬P    │
+├───────┼─────────┤
+│ False │  True   │ ← Flip!
+│ True  │  False  │ ← Flip!
+└───────┴─────────┘
+
+NYAMU'S STORY:
+Nyamu wears masks - what appears true (her confident persona) may be false,
+and what's hidden (her true self) may be the real truth. Negation is her daily life.
 """,
-                    'example': "Example: If 'It is day' is true, then 'NOT day' (night) is false."
+                    'example': "Example: If 'It is day' is TRUE, then NOT day (night) is FALSE."
                 },
                 {
-                    'title': "6️⃣ XOR (EXCLUSIVE OR) - UIKA'S JEALOUSY",
+                    'title': "6️⃣ XOR (⊕) - EXCLUSIVE CHOICE",
                     'symbol': '⊕',
-                    'character': 'Uika\'s Darker Truth',
+                    'character': 'Uika\'s Jealousy',
+                    'easy_rule': 'ONE and ONLY ONE must be true',
+                    'everyday_example': '"You can have cake XOR ice cream" (choose one, not both)',
                     'description': """
-XOR is true when EXACTLY ONE statement is true. Like Uika's jealousy - either Sakiko is with her OR with Mutsumi,
-never both. It's exclusive.
+WHAT IS XOR (Exclusive OR)?
+XOR is like OR's strict cousin. OR is happy with both being true,
+but XOR says "No! You must choose EXACTLY ONE!"
 
-Truth Table:
-P     Q     P ⊕ Q
-F     F       F    (Both false → False)
-F     T       T    (Only Q true → True)
-T     F       T    (Only P true → True)
-T     T       F    (Both true → False)
+Think of it like:
+• A toggle switch: You can have A OR B, but never both
+• Restaurant special: "Choose soup OR salad" - you can't have both!
+• Dating: "You can date me OR my friend" - picking both is not allowed
 
-In life: "Either you're with me OR against me" - can't be both.
+TRUTH TABLE (easy memory: rows 2 and 3 are TRUE):
+┌───────┬───────┬─────────┐
+│   P   │   Q   │  P ⊕ Q  │
+├───────┼───────┼─────────┤
+│ False │ False │  False  │ ← Nothing true ✗
+│ False │ True  │  True   │ ← Only Q true ✓
+│ True  │ False │  True   │ ← Only P true ✓
+│ True  │ True  │  False  │ ← Both true ✗ (not allowed!)
+└───────┴───────┴─────────┘
+
+UIKA'S STORY:
+Uika's jealousy says Sakiko must be with her OR with Mutsumi - never both.
+XOR is the painful logic of exclusivity.
 """,
-                    'example': "Example: 'You can have cake XOR ice cream' - choose one, not both."
+                    'example': "Example: 'You can take the bus XOR the train' → You must pick one, not both."
                 },
                 {
-                    'title': "7️⃣ NAND (NOT AND) - NYAMU'S VALIDATION",
+                    'title': "7️⃣ NAND (↑) - NOT AND",
                     'symbol': '↑',
-                    'character': 'Nyamu\'s Digital Prison',
+                    'character': 'Nyamu\'s Validation',
+                    'easy_rule': 'Everything EXCEPT both true',
+                    'everyday_example': '"You can\'t have your cake AND eat it too"',
                     'description': """
-NAND is the opposite of AND - it's false only when BOTH are true. Like Nyamu's need for validation -
-she only feels 'false' (inauthentic) when she has both attention AND approval.
+WHAT IS NAND?
+NAND is the opposite of AND. It's FALSE only when BOTH are TRUE.
+Every other combination is TRUE.
 
-Truth Table:
-P     Q     P ↑ Q
-F     F       T    (Both false → True)
-F     T       T    (Only Q true → True)
-T     F       T    (Only P true → True)
-T     T       F    (Both true → FALSE!)
+Think of it like:
+• "You can't have everything" - the only time it's false is when you DO have everything
+• A picky eater: "I'll eat anything EXCEPT fish AND broccoli together"
 
-In life: NAND is everything EXCEPT when everything is true.
+TRUTH TABLE (easy memory: only row 4 is FALSE):
+┌───────┬───────┬─────────┐
+│   P   │   Q   │  P ↑ Q  │
+├───────┼───────┼─────────┤
+│ False │ False │  True   │ ← Neither true ✓
+│ False │ True  │  True   │ ← Only Q true ✓
+│ True  │ False │  True   │ ← Only P true ✓
+│ True  │ True  │  False  │ ← Both true ✗
+└───────┴───────┴─────────┘
+
+NYAMU'S STORY:
+Nyamu only feels "false" (inauthentic) when she has both attention AND approval.
+Any other combination, she's performing (being "true" to her mask).
 """,
-                    'example': "Example: 'You can't have your cake AND eat it too' - NAND of having and eating."
+                    'example': "Example: 'You can't be rich AND healthy' (NAND) - only false if you somehow have both."
                 },
                 {
-                    'title': "8️⃣ NOR (NOT OR) - UMIRI'S SAFETY",
+                    'title': "8️⃣ NOR (↓) - NOT OR",
                     'symbol': '↓',
-                    'character': 'Umiri\'s Defense Mechanism',
+                    'character': 'Umiri\'s Safety',
+                    'easy_rule': 'ONLY when both are false',
+                    'everyday_example': '"I like neither tea NOR coffee"',
                     'description': """
-NOR is true only when BOTH are false. Like Umiri's 30-band strategy - she's safe only when she doesn't truly belong
-AND they don't truly have her. It's the operation of emptiness and safety.
+WHAT IS NOR?
+NOR is the opposite of OR. It's TRUE only when BOTH are FALSE.
+Everything else is FALSE.
 
-Truth Table:
-P     Q     P ↓ Q
-F     F       T    (Both false → TRUE!)
-F     T       F    (Q true → False)
-T     F       F    (P true → False)
-T     T       F    (Both true → False)
+Think of it like:
+• "I want nothing" - the only time it's true is when you truly want nothing
+• A hermit: "I see no one AND no one sees me" - that's the only time they're happy
 
-In life: "Neither this nor that" - the only time it's true is when nothing is true.
+TRUTH TABLE (easy memory: only row 1 is TRUE):
+┌───────┬───────┬─────────┐
+│   P   │   Q   │  P ↓ Q  │
+├───────┼───────┼─────────┤
+│ False │ False │  True   │ ← Both false ✓
+│ False │ True  │  False  │ ← Q true ✗
+│ True  │ False │  False  │ ← P true ✗
+│ True  │ True  │  False  │ ← Both true ✗
+└───────┴───────┴─────────┘
+
+UMIRI'S STORY:
+Umiri feels safe only when she doesn't belong AND they don't truly want her.
+NOR is her defense mechanism - safety through emptiness.
 """,
-                    'example': "Example: 'I like neither tea nor coffee' - only true if you dislike both."
+                    'example': "Example: 'I play in no bands' - TRUE only if you truly play in ZERO bands."
                 }
             ],
+            'quick_reference': """
+📋 QUICK REFERENCE CARD 📋
+
+AND (∧)  : TRUE only when BOTH are true
+OR (∨)   : TRUE when at least ONE is true
+NOT (¬)  : FLIPS the truth value
+IMPLIES (→): FALSE only when TRUE → FALSE
+IFF (↔)  : TRUE when both are the SAME
+XOR (⊕)  : TRUE when EXACTLY ONE is true
+NAND (↑) : FALSE only when BOTH are true
+NOR (↓)  : TRUE only when BOTH are false
+
+Memory tricks:
+• AND = "All or nothing" (both needed)
+• OR = "One is enough" (at least one)
+• IMPLIES = "Broken promise" (only false when promise broken)
+• IFF = "Mirror" (both match)
+• XOR = "Choose one" (exactly one)
+• NAND = "Not everything" (everything except both)
+• NOR = "Nothing works" (only when nothing)
+""",
             'tips': """
-💡 PRO TIPS FOR MASTERING LOGIC:
+🎓 BEGINNER'S ROADMAP TO MASTERING LOGIC:
 
-1. MEMORIZE THE TRUTH TABLES: Each operation has a unique pattern. Practice until they become second nature.
+STEP 1: Start with the basics
+  • Learn AND, OR, and NOT first - they're the foundation
+  • Practice with real-life examples (not abstract letters!)
+  
+STEP 2: Move to IMPLICATION and IFF
+  • Think of "if...then" as promises, not causes
+  • Remember: IMPLICATION is ONLY false when the promise is broken
 
-2. USE MNEMONICS:
-   • AND = Both must be True (like adding requirements)
-   • OR = At least one True (like options on a menu)
-   • IMPLICATION = Only broken when True → False (like a broken promise)
-   • BICONDITIONAL = Both same (like matching socks)
-   • XOR = Exactly one True (like a toggle switch)
-   • NAND = Everything except both True (like "you can't have it all")
-   • NOR = Only when both False (like "nothing is true")
+STEP 3: Tackle the tricky ones
+  • XOR = "exclusive or" = one or the other, not both
+  • NAND = opposite of AND
+  • NOR = opposite of OR
 
-3. CONNECT TO CHARACTERS: Each Ave Mujica member's struggle embodies their logical operation.
-   Think of their stories when you encounter the symbols.
+STEP 4: Play the Character Quests!
+  • Each character teaches their operation through story
+  • The stories help you FEEL the logic, not just memorize it
 
-4. PRACTICE WITH THE GATES: The 16 Gates of Truth will test each operation randomly.
-   Start with the Character Quests first - they teach through story.
+STEP 5: Test yourself with the 16 Gates
+  • Try to guess the operation before clicking
+  • Pay attention to which patterns feel familiar
 
-5. REMEMBER: Logic isn't just abstract rules - it's how we understand choices, promises,
-   relationships, and ourselves. The truth tables reflect real human dilemmas.
+💡 PRO TIPS FOR BEGINNERS:
 
-May the light of reason guide your path through the masquerade! 🦇
+• Don't memorize - UNDERSTAND. The truth tables have patterns!
+• Connect to characters: Sakiko (AND) needs both, Uika (XOR) must choose
+• Use real life: "If I study, I pass" is easier to grasp than abstract P→Q
+• Practice daily: Even 5 minutes helps build intuition
+• It's okay to be wrong! Every mistake teaches you something
+
+Remember: Logic isn't about being perfect - it's about understanding
+how truth works. The Ave Mujica members aren't perfect either,
+but they're learning, just like you.
+
+May your journey through the masquerade illuminate your path! 🦇✨
 """
         }
