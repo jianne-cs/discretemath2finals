@@ -1,5 +1,5 @@
 # character_quests.py
-# Character-specific logic quest classes with improved structure
+# Character-specific logic quest classes with all stages using truth table puzzles
 
 from abc import ABC, abstractmethod
 from typing import Dict, List, Any, Optional
@@ -164,15 +164,13 @@ Sakiko: "Logic was supposed to give me answers. Instead, it's giving me
          two different truths. Which one is real? Which one is ME?"
 """,
                 'challenge': "Solve the paradox of dual implications",
-                'puzzle_type': 'complex',
-                'puzzle_id': 'dual_implication',
-                'puzzle_data': {
-                    'title': "The Crossroads Paradox",
-                    'A': 'Go to father',
-                    'B': 'Go to band',
-                    'statement1': 'A → (Band fails)',
-                    'statement2': 'B → (Father fails)'
-                },
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Go to father', 'Q': 'Band fails', 'expected': 'T', 'lesson': 'If she goes to father, band fails - implication holds'},
+                    {'P': 'Go to father', 'Q': 'Band succeeds', 'expected': 'F', 'lesson': 'This would break the implication'},
+                    {'P': 'Go to band', 'Q': 'Father fails', 'expected': 'T', 'lesson': 'If she goes to band, father fails - implication holds'},
+                    {'P': 'Go to band', 'Q': 'Father succeeds', 'expected': 'F', 'lesson': 'This would break the implication'}
+                ],
                 'lesson': "Logic doesn't make the choice for you - it only shows the consequences of each path.",
                 'emotional_payoff': """
 Sakiko: "I understand now. Both implications ARE true - they're just descriptions
@@ -286,19 +284,14 @@ Young Uika: "Sakiko came with her music and her laughter.
  possession of the only person who ever broke through her isolation.]
 """,
                 'challenge': "Transition from XOR thinking to understanding AND",
-                'puzzle_type': 'complex',
-                'puzzle_id': 'comparison',
-                'puzzle_data': {
-                    'title': "XOR vs AND",
-                    'comparison': """
-Uika Present | Sakiko Present | XOR (Old World) | AND (New Possibility)
-True         | True            | False           | True
-True         | False           | True            | False
-False        | True            | True            | False
-False        | False           | False           | False
-"""
-                },
-                'lesson': "XOR says 'either-or', AND says 'both'. Love can be AND.",
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Uika present', 'Q': 'Sakiko present', 'expected': 'T', 'lesson': 'XOR says true when exactly one is present'},
+                    {'P': 'Uika present', 'Q': 'Sakiko absent', 'expected': 'T', 'lesson': 'Uika alone - familiar pattern'},
+                    {'P': 'Uika absent', 'Q': 'Sakiko present', 'expected': 'T', 'lesson': 'Sakiko alone - new possibility'},
+                    {'P': 'Uika absent', 'Q': 'Sakiko absent', 'expected': 'F', 'lesson': 'Both absent - the void returns'}
+                ],
+                'lesson': "XOR says 'either-or'. But love can also be AND where both are true.",
                 'emotional_payoff': """
 Uika: "AND means... I can exist AND Sakiko can exist, at the same time?
        We don't have to take turns being real?"
@@ -322,25 +315,13 @@ Uika: "That's... that's me? That's what XOR looks like when it's not just logic,
        when it's how you love? I look like a monster."
 """,
                 'challenge': "Understand how XOR creates jealousy and obsession",
-                'puzzle_type': 'complex',
-                'puzzle_id': 'analysis',
-                'puzzle_data': {
-                    'title': "Jealousy as XOR",
-                    'analysis': """
-Let A = Sakiko spends time with Uika
-Let B = Sakiko spends time with Mutsumi
-
-Uika's belief: A ⊕ B (must be exclusive)
-
-A | B | XOR Result | Uika's Emotion
-T | T | False      | Anger (violates belief)
-T | F | True       | Happiness
-F | T | True       | Jealousy
-F | F | False      | Emptiness
-
-The only time Uika is happy is when Sakiko is with her exclusively.
-"""
-                },
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Sakiko with Uika', 'Q': 'Sakiko with Mutsumi', 'expected': 'T', 'lesson': 'Uika\'s belief - exactly one should be true'},
+                    {'P': 'Sakiko with Uika', 'Q': 'Sakiko not with Mutsumi', 'expected': 'T', 'lesson': 'Uika happy - her belief holds'},
+                    {'P': 'Sakiko not with Uika', 'Q': 'Sakiko with Mutsumi', 'expected': 'T', 'lesson': 'Uika jealous - her belief holds but hurts'},
+                    {'P': 'Sakiko not with Uika', 'Q': 'Sakiko not with Mutsumi', 'expected': 'F', 'lesson': 'Both false - emptiness'}
+                ],
                 'lesson': "Jealousy is XOR applied to love - but love can be AND.",
                 'emotional_payoff': """
 Uika: "I was going to hurt someone... because my mind couldn't accept
@@ -367,22 +348,14 @@ Uika: "Maybe... maybe love is like that too. Maybe I can have Sakiko
 [For the first time, she smiles - not a smile of possession, but of belonging.]
 """,
                 'challenge': "Practice combining AND with XOR understanding",
-                'puzzle_type': 'complex',
-                'puzzle_id': 'reflection',
-                'puzzle_data': {
-                    'title': "Harmony of Operations",
-                    'reflection': """
-XOR and AND can coexist when applied to different aspects:
-
-• Solo moments with Sakiko: XOR with others (True)
-• Band moments together: AND with everyone (True)
-• Uika's love for Sakiko: AND with Sakiko's love for others (True)
-• Uika's identity: AND with her past self (True)
-
-The key is knowing when to apply which operation.
-"""
-                },
-                'lesson': "XOR and AND can coexist in a healthy relationship when applied appropriately.",
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Exclusive moments', 'Q': 'Inclusive belonging', 'expected': 'T', 'lesson': 'Both can be true at different times'},
+                    {'P': 'Exclusive moments', 'Q': 'No belonging', 'expected': 'F', 'lesson': 'Exclusive without belonging is lonely'},
+                    {'P': 'No exclusive moments', 'Q': 'Inclusive belonging', 'expected': 'F', 'lesson': 'Belonging without intimacy is shallow'},
+                    {'P': 'No exclusive moments', 'Q': 'No belonging', 'expected': 'F', 'lesson': 'Neither - back to isolation'}
+                ],
+                'lesson': "XOR and AND can coexist when applied to different aspects of a relationship.",
                 'emotional_payoff': """
 Uika: "I can have exclusive moments with Sakiko AND share her with others.
        The island taught me XOR, but the world needs AND."
@@ -462,9 +435,10 @@ Young Mutsumi: "If I'm not my mother, then who am I?
                 'challenge': "Understand identity negation",
                 'puzzle_type': 'truth_table',
                 'puzzle_data': [
-                    {'P': 'Mutsumi = Mother', 'expected': 'Mutsumi ≠ Mother', 'lesson': 'Simple negation of identity'},
-                    {'P': 'Mutsumi = Actress', 'expected': 'Mutsumi ≠ Actress', 'lesson': 'Rejecting imposed roles'},
-                    {'P': 'Mutsumi = Musician', 'expected': 'Mutsumi ≠ Musician', 'lesson': 'Even chosen identities can be negated'}
+                    {'P': 'Mutsumi = Mother', 'expected': 'F', 'lesson': 'Simple negation of identity - she is NOT her mother'},
+                    {'P': 'Mutsumi = Actress', 'expected': 'F', 'lesson': 'Rejecting imposed roles - she is NOT just an actress'},
+                    {'P': 'Mutsumi = Musician', 'expected': 'T', 'lesson': 'She IS a musician - this is true'},
+                    {'P': 'Mutsumi = Herself', 'expected': 'T', 'lesson': 'She IS herself - the ultimate truth'}
                 ],
                 'lesson': "Negation of expectation creates space for true self, but also uncertainty.",
                 'emotional_payoff': """
@@ -493,22 +467,13 @@ Mutsumi: "When I play, I negate everything else.
  Minami's daughter playing pretend.]
 """,
                 'challenge': "Explore negation as liberation",
-                'puzzle_type': 'complex',
-                'puzzle_id': 'matrix',
-                'puzzle_data': {
-                    'title': "Identity Matrix",
-                    'matrix': """
-Identity      | Public Expectation | Personal Truth
-Actress       | True                | False
-Minami's Daughter | True            | False
-Musician      | False               | True
-Mutsumi       | ?                    | ?
-
-¬Actress = Musician
-¬Minami's Daughter = Mutsumi
-But ¬Musician ≠ Actress
-"""
-                },
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Is actress', 'expected': 'F', 'lesson': 'When playing, she is NOT an actress'},
+                    {'P': 'Is daughter', 'expected': 'F', 'lesson': 'When playing, she is NOT just a daughter'},
+                    {'P': 'Is musician', 'expected': 'T', 'lesson': 'When playing, she IS a musician'},
+                    {'P': 'Is herself', 'expected': 'T', 'lesson': 'When playing, she IS herself'}
+                ],
                 'lesson': "Negation can create space for authentic identity, but society may not recognize it.",
                 'emotional_payoff': """
 Mutsumi: "When I play, I'm not anyone's daughter, not anyone's actress.
@@ -539,27 +504,13 @@ Mortis: "She couldn't be what you wanted. So I am what she is NOT.
  from the negation of Mutsumi's true self.]
 """,
                 'challenge': "Understand destructive negation",
-                'puzzle_type': 'complex',
-                'puzzle_id': 'double_negation',
-                'puzzle_data': {
-                    'title': "The Birth of Mortis",
-                    'formula': """
-Let M = Mutsumi's true self
-Let P = Public expectations
-
-Mortis = ¬(M ∧ compliance with P)
-
-Truth table of identity dissolution:
-
-M True? | Compliant? | Mortis Emerges?
-True    | True       | No (Mutsumi thrives)
-True    | False      | Yes (rebellion creates Mortis)
-False   | True       | Yes (acting creates Mortis)
-False   | False      | Yes (complete negation)
-
-When M is constantly negated, only Mortis remains.
-"""
-                },
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Mutsumi present', 'Q': 'Mortis present', 'expected': 'F', 'lesson': 'They cannot both be present at once'},
+                    {'P': 'Mutsumi present', 'Q': 'Mortis absent', 'expected': 'T', 'lesson': 'Mutsumi alone - vulnerable'},
+                    {'P': 'Mutsumi absent', 'Q': 'Mortis present', 'expected': 'T', 'lesson': 'Mortis takes over - protective but destructive'},
+                    {'P': 'Mutsumi absent', 'Q': 'Mortis absent', 'expected': 'F', 'lesson': 'Neither exists - annihilation'}
+                ],
                 'lesson': "When the self is constantly negated, only the negation remains.",
                 'emotional_payoff': """
 Mortis: "I am what happens when you negate someone too much.
@@ -587,29 +538,13 @@ Mutsumi: "We're not opposites. We're... complements."
 Mortis: "Like day and night. Light and shadow. You can't have one without the other."
 """,
                 'challenge': "Understand that negation creates relationship, not just opposition",
-                'puzzle_type': 'complex',
-                'puzzle_id': 'reflection',
-                'puzzle_data': {
-                    'title': "Identity Integration",
-                    'reflection': """
-Let A = Mutsumi
-Let B = Mortis
-
-A = ¬B
-B = ¬A
-
-This creates a cycle. The only way out is to recognize:
-A ∧ B can be True (coexistence)
-
-A Present | B Present | Integration
-True      | False     | Incomplete (Mutsumi alone)
-False     | True      | Incomplete (Mortis alone)
-True      | True      | Complete (both acknowledged)
-False     | False     | Annihilation (neither exists)
-
-Only when both are accepted as True can healing begin.
-"""
-                },
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Mutsumi acknowledged', 'Q': 'Mortis acknowledged', 'expected': 'T', 'lesson': 'Both acknowledged - integration'},
+                    {'P': 'Mutsumi acknowledged', 'Q': 'Mortis denied', 'expected': 'F', 'lesson': 'Denying shadow leads to imbalance'},
+                    {'P': 'Mutsumi denied', 'Q': 'Mortis acknowledged', 'expected': 'F', 'lesson': 'Denying self leads to loss'},
+                    {'P': 'Mutsumi denied', 'Q': 'Mortis denied', 'expected': 'F', 'lesson': 'Denying both leads to nothing'}
+                ],
                 'lesson': "Both selves can coexist when acknowledged, not negated.",
                 'emotional_payoff': """
 [Mutsumi reaches out. Mortis takes her hand.]
@@ -653,7 +588,200 @@ Mutsumi: "Negation taught me that who I'm NOT helps define who I AM.
             'unlock_song': "Imprisoned - Freedom found within acceptance"
         }
 
+class MutsumiNegationQuest(BaseQuest):
+    """Mutsumi Wakaba (Mortis) - Negation Quest"""
+    
+    @property
+    def quest_name(self) -> str: return "The Face Behind the Mask"
+    @property
+    def character(self) -> str: return "Mutsumi Wakaba"
+    @property
+    def role(self) -> str: return "Mortis"
+    @property
+    def operation(self) -> str: return "Negation (¬)"
+    @property
+    def symbol(self) -> str: return "¬"
+    
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.stage_count = 4
+    
+    def get_stage_data(self, stage: int) -> Dict[str, Any]:
+        stages = {
+            0: {
+                'title': "Born on Stage",
+                'scene': "childhood_memory",
+                'dialogue': """
+[SCENE: Young Mutsumi watches her mother perform, the audience enraptured.]
 
+Mother: "Mutsumi, you'll be a natural! You have my genes!"
+
+[Cameras flash. Reporters swarm.]
+
+Young Mutsumi: "But what if I'm NOT you? What if I'm just me?"
+
+[The world expects another Minami. Every "be like your mother"
+ is an erasure of herself.]
+
+Young Mutsumi: "If I'm not my mother, then who am I? 
+                 ¬Mother = ? The equation has no answer."
+""",
+                'challenge': "Understand identity negation",
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Is her mother', 'Q': 'Is an actress', 'expected': 'F', 'lesson': 'She is NOT her mother - negation is true'},
+                    {'P': 'Is her mother', 'Q': 'Is a musician', 'expected': 'F', 'lesson': 'She is NOT her mother, even as a musician'},
+                    {'P': 'Is Mutsumi', 'Q': 'Is herself', 'expected': 'T', 'lesson': 'She IS Mutsumi - this is true'},
+                    {'P': 'Is Mortis', 'Q': 'Is shadow', 'expected': 'F', 'lesson': 'Mortis is not yet born'}
+                ],
+                'lesson': "Negation of expectation creates space for true self, but also uncertainty.",
+                'emotional_payoff': """
+Young Mutsumi: "Every time I'm NOT my mother, I feel guilty.
+                 But maybe... maybe ¬Mother doesn't mean failure.
+                 Maybe it means I'm allowed to be someone else."
+""",
+                'reward': "Mother's Old Script (Blank Pages)"
+            },
+            1: {
+                'title': "The Guitar's Voice",
+                'scene': "crychic_days",
+                'dialogue': """
+[SCENE: Mutsumi holds her guitar - the one thing that's truly hers.]
+
+Mutsumi: "With Sakiko, with CRYCHIC, I could just play.
+          I was NOT an actress. I was NOT a daughter.
+          I was just... Mutsumi. The negation felt like freedom."
+
+[She strums a chord, smiling.]
+
+Mutsumi: "When I play, I negate everything else.
+          The music is my ¬world. ¬my mother. ¬my duty."
+
+[But even in freedom, shadows lurked. The world still saw
+ Minami's daughter playing pretend.]
+""",
+                'challenge': "Explore negation as liberation",
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Is acting', 'Q': 'Is playing music', 'expected': 'F', 'lesson': 'When playing, she is NOT acting'},
+                    {'P': 'Is being daughter', 'Q': 'Is being herself', 'expected': 'T', 'lesson': 'She can be daughter AND herself'},
+                    {'P': 'Is free', 'Q': 'Is expected', 'expected': 'T', 'lesson': 'Freedom is true, expectations are false'},
+                    {'P': 'Is Mutsumi', 'Q': 'Is Minami\'s daughter', 'expected': 'T', 'lesson': 'She is both, but one is true self'}
+                ],
+                'lesson': "Negation can create space for authentic identity, but society may not recognize it.",
+                'emotional_payoff': """
+Mutsumi: "When I play, I'm not anyone's daughter, not anyone's actress.
+          I'm just... me. But as soon as the music stops, the negations end,
+          and the expectations rush back in."
+""",
+                'reward': "Guitar Pick (Worn Smooth)"
+            },
+            2: {
+                'title': "The Birth of Mortis",
+                'scene': "breaking_point",
+                'dialogue': """
+[SCENE: The breaking point. Sakiko's harsh words echo. The pressure mounts.]
+
+Sakiko: "You're not trying hard enough! You're just coasting on your mother's name!"
+
+Mutsumi: "I can't... I can't be what anyone wants..."
+
+[Something cracks. The air grows cold. A new voice emerges.]
+
+Mortis: "She couldn't be what you wanted. So I am what she is NOT.
+         I am the negation made flesh. I am everything Mutsumi cannot be.
+         You want an actress? I'll give you a performance.
+         You want a daughter? I'll give you obedience.
+         You want anything? I'll be its opposite."
+
+[The stage darkens as Mortis takes control - a being born entirely
+ from the negation of Mutsumi's true self.]
+""",
+                'challenge': "Understand destructive negation",
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Mutsumi is present', 'Q': 'Mortis is present', 'expected': 'F', 'lesson': 'They cannot both be present at once'},
+                    {'P': 'Mutsumi is present', 'Q': 'Mortis is absent', 'expected': 'T', 'lesson': 'Mutsumi alone - vulnerable'},
+                    {'P': 'Mutsumi is absent', 'Q': 'Mortis is present', 'expected': 'T', 'lesson': 'Mortis takes over - protective but destructive'},
+                    {'P': 'Mutsumi is absent', 'Q': 'Mortis is absent', 'expected': 'F', 'lesson': 'Neither exists - annihilation'}
+                ],
+                'lesson': "When the self is constantly negated, only the negation remains.",
+                'emotional_payoff': """
+Mortis: "I am what happens when you negate someone too much.
+         I am the shadow that grows when the light is denied.
+         But even shadows... want to be real."
+""",
+                'reward': "Broken Mirror Shard"
+            },
+            3: {
+                'title': "The Integration",
+                'scene': "hall_of_mirrors",
+                'dialogue': """
+[SCENE: Mutsumi and Mortis face each other in a hall of mirrors.
+ Infinite reflections stretch in all directions.]
+
+Mutsumi: "You are me."
+Mortis: "I am NOT you."
+Mutsumi: "But ¬Mortis = Mutsumi."
+Mortis: "And ¬Mutsumi = Mortis."
+
+[They realize - negation creates a duality, but also a connection.
+ They are two sides of the same coin, defined by each other's absence.]
+
+Mutsumi: "We're not opposites. We're... complements."
+Mortis: "Like day and night. Light and shadow. You can't have one without the other."
+""",
+                'challenge': "Understand that negation creates relationship, not just opposition",
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Mutsumi is acknowledged', 'Q': 'Mortis is acknowledged', 'expected': 'T', 'lesson': 'Both acknowledged - integration'},
+                    {'P': 'Mutsumi is acknowledged', 'Q': 'Mortis is denied', 'expected': 'F', 'lesson': 'Denying shadow leads to imbalance'},
+                    {'P': 'Mutsumi is denied', 'Q': 'Mortis is acknowledged', 'expected': 'F', 'lesson': 'Denying self leads to loss'},
+                    {'P': 'Mutsumi is denied', 'Q': 'Mortis is denied', 'expected': 'F', 'lesson': 'Denying both leads to nothing'}
+                ],
+                'lesson': "Both selves can coexist when acknowledged, not negated.",
+                'emotional_payoff': """
+[Mutsumi reaches out. Mortis takes her hand.]
+
+Mutsumi: "I don't have to kill you to be me."
+Mortis: "And I don't have to erase you to exist."
+
+[They merge - not into one, but into understanding.]
+""",
+                'reward': "Two Halves of One Heart"
+            }
+        }
+        return stages.get(stage, stages[0])
+    
+    def get_finale(self) -> Dict[str, Any]:
+        return {
+            'title': "Playing as One",
+            'scene': "unity",
+            'dialogue': """
+[SCENE: Mutsumi takes the stage, guitar in hand. For the first time,
+ both she and Mortis play together - two hands on one instrument,
+ two souls in one body, two truths in one person.]
+
+Mutsumi: "I am NOT just my mother's daughter."
+Mortis: "I am NOT just Mutsumi's shadow."
+
+Together: "We ARE. And that's enough."
+
+[The music they create is unlike anything before - it contains
+ both the gentle melody of Mutsumi and the powerful chords of Mortis,
+ proving that negation doesn't have to mean destruction.]
+
+Mutsumi: "Negation taught me that who I'm NOT helps define who I AM.
+          Mortis taught me that even shadows have a place in the light.
+          Together, we're not broken - we're complete."
+
+[The audience doesn't see two people. They see one musician,
+ whole and authentic for the first time.]
+""",
+            'reward': "Mortis' Integration + Negation Mastery",
+            'unlock_song': "Imprisoned - Freedom found within acceptance"
+        }
+    
 class UmiriNORQuest(BaseQuest):
     """Umiri Yahata (Timoris) - NOR Quest"""
     
@@ -729,32 +857,13 @@ Umiri: "30 bands. 30 chances to belong. 30 opportunities for NOR to be True.
         So why do I feel so empty? Why does safety feel so much like a cage?"
 """,
                 'challenge': "Analyze the NOR defense mechanism",
-                'puzzle_type': 'complex',
-                'puzzle_id': 'analysis',
-                'puzzle_data': {
-                    'title': "The 30-Band Paradox",
-                    'analysis': """
-For each band B:
-P = Umiri truly belongs to B
-Q = B truly has Umiri's commitment
-
-Umiri's goal: P=False AND Q=False for all B
-Result: NOR(B) = True for all B
-
-But this creates a paradox:
-Total belonging = NOR(B1) ∧ NOR(B2) ∧ ... ∧ NOR(B30)
-
-When all are false together, what remains? Nothing.
-
-Truth table of emotional safety:
-
-In any band | Committed | Safe from hurt? | Actually happy?
-True        | True      | No              | Yes (if trust exists)
-True        | False     | Maybe           | No (half-hearted)
-False       | True      | No              | No (can't happen)
-False       | False     | Yes             | No (empty)
-"""
-                },
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Belongs to Band A', 'Q': 'Band A wants her', 'expected': 'T', 'lesson': 'NOR true - safe but empty'},
+                    {'P': 'Belongs to Band B', 'Q': 'Band B wants her', 'expected': 'T', 'lesson': 'Another safe but empty relationship'},
+                    {'P': 'Belongs to Band C', 'Q': 'Band C wants her', 'expected': 'T', 'lesson': 'Pattern continues'},
+                    {'P': 'Truly belongs anywhere', 'Q': 'Truly wanted anywhere', 'expected': 'F', 'lesson': 'Never truly belonging'}
+                ],
                 'lesson': "NOR keeps you safe but empty - you can't belong everywhere by belonging nowhere.",
                 'emotional_payoff': """
 Umiri: "So NOR keeps me safe... but it also keeps me empty.
@@ -785,27 +894,17 @@ Umiri: "But that means NOR becomes False... and I'm vulnerable again.
 Umiri: "Why can't I leave? Why do I want to stay?"
 """,
                 'challenge': "Confront the fear of letting NOR become False",
-                'puzzle_type': 'complex',
-                'puzzle_id': 'equation',
-                'puzzle_data': {
-                    'title': "The Vulnerability Equation",
-                    'equation': """
-Let A = Umiri belongs to Ave Mujica
-Let B = Ave Mujica wants Umiri
-
-Old pattern: A=False, B=False → Safe (NOR=True)
-New possibility: A=True, B=True → Vulnerable (NOR=False)
-
-Expected Value of Trust = (Happiness if True) × Probability of Trust
-                        - (Pain if Betrayed) × Probability of Betrayal
-
-But probability can't be calculated - that's what trust means.
-"""
-                },
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Belongs to Ave Mujica', 'Q': 'Ave Mujica wants her', 'expected': 'F', 'lesson': 'Vulnerable - both could be true'},
+                    {'P': 'Belongs to Ave Mujica', 'Q': 'They don\'t want her', 'expected': 'F', 'lesson': 'Rejection fear'},
+                    {'P': 'Doesn\'t belong', 'Q': 'They want her', 'expected': 'F', 'lesson': 'Paradox'},
+                    {'P': 'Doesn\'t belong', 'Q': 'They don\'t want her', 'expected': 'T', 'lesson': 'Safe but empty - the old pattern'}
+                ],
                 'lesson': "Vulnerability is scary but necessary for real connection.",
                 'emotional_payoff': """
 Umiri: "I can't calculate this. I can't control this.
-        For the first time, both A and B might be True.
+        For the first time, both P and Q might be True.
         NOR is failing... and I'm terrified.
         But... I also don't want to leave."
 """,
@@ -834,28 +933,13 @@ Umiri: "NOR=False. P=True. Q=True. I'm vulnerable. I'm terrified.
         I'm finally, truly, alive."
 """,
                 'challenge': "Make the choice to accept vulnerability",
-                'puzzle_type': 'complex',
-                'puzzle_id': 'choice',
-                'puzzle_data': {
-                    'title': "The Final Choice",
-                    'options': """
-Path A (Stay in NOR):
-- Safety: 100%
-- Happiness: 0%
-- Regret in 10 years: 100%
-
-Path B (Embrace Ave Mujica):
-- Safety: Unknown
-- Happiness: Potentially 100%
-- Regret: 0% (even if it fails, at least she tried)
-
-NOR says choose Path A.
-Heart says choose Path B.
-
-There is no logical proof that Path B is correct.
-That's why it's called faith, not calculation.
-"""
-                },
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Choose safety', 'Q': 'Choose connection', 'expected': 'F', 'lesson': 'Can\'t have both - must choose'},
+                    {'P': 'Choose safety', 'Q': 'Reject connection', 'expected': 'T', 'lesson': 'Stay in NOR - safe but empty'},
+                    {'P': 'Reject safety', 'Q': 'Choose connection', 'expected': 'T', 'lesson': 'Embrace vulnerability - scary but fulfilling'},
+                    {'P': 'Reject safety', 'Q': 'Reject connection', 'expected': 'F', 'lesson': 'Rejecting both leads nowhere'}
+                ],
                 'lesson': "Some things are worth being vulnerable for.",
                 'emotional_payoff': """
 [Umiri joins the group. They welcome her without question.]
@@ -974,27 +1058,13 @@ Nyamu: "But for me, I have to fight for every moment of both being true.
         Why does NAND come so easily to others and so painfully to me?"
 """,
                 'challenge': "Understand how comparison poisons NAND perception",
-                'puzzle_type': 'complex',
-                'puzzle_id': 'comparison',
-                'puzzle_data': {
-                    'title': "The Comparison Trap",
-                    'comparison': """
-For Mutsumi's mother:
-P_natural = True (always seen)
-Q_natural = True (always approved)
-NAND_natural = False (she's always 'real')
-
-For Nyamu:
-P_nyamu = fluctuates
-Q_nyamu = fluctuates
-NAND_nyamu = usually True (she's always performing)
-
-But this comparison is flawed because:
-1. You're comparing your behind-the-scenes with someone else's highlight reel
-2. Everyone's NAND fluctuates - you just don't see theirs
-3. The goal isn't to make NAND permanently False - that's impossible
-"""
-                },
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Seen naturally', 'Q': 'Approved naturally', 'expected': 'F', 'lesson': 'Others seem to have both true effortlessly'},
+                    {'P': 'Seen through effort', 'Q': 'Approved through effort', 'expected': 'T', 'lesson': 'Nyamu has to work for both'},
+                    {'P': 'Seen', 'Q': 'Disliked', 'expected': 'T', 'lesson': 'Her constant fear'},
+                    {'P': 'Unseen', 'Q': 'Unapproved', 'expected': 'T', 'lesson': 'Her fear of invisibility'}
+                ],
                 'lesson': "You're comparing your struggle to someone else's curated success.",
                 'emotional_payoff': """
 Nyamu: "So I'm comparing my constant struggle to someone else's
@@ -1025,28 +1095,13 @@ Nyamu: "I'm trying to make Q True! Why won't you approve of me?!
         Why won't anyone approve of me?!"
 """,
                 'challenge': "Navigate crisis when NAND becomes painfully True",
-                'puzzle_type': 'complex',
-                'puzzle_id': 'analysis',
-                'puzzle_data': {
-                    'title': "Crisis Management",
-                    'analysis': """
-Current state: P=True, Q=False → NAND=True (crisis)
-
-Nyamu's instinct: Try to make Q=True at any cost
-- Post apologies (might make Q=True temporarily)
-- Blame others (might make P focus on them)
-- Delete everything (make P=False, retreat to invisibility)
-
-None of these address the root: Her self-worth is tied to NAND.
-
-Truth table of healthy self-worth:
-
-Self-worth based on | When NAND=True | Healthy response
-External validation  | Crisis         | Panic
-Internal validation  | Inconvenient   | Accept and learn
-Both                | Complicated    | Grow
-"""
-                },
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Seen', 'Q': 'Approved', 'expected': 'F', 'lesson': 'What she desperately wants'},
+                    {'P': 'Seen', 'Q': 'Disliked', 'expected': 'T', 'lesson': 'Her current nightmare'},
+                    {'P': 'Unseen', 'Q': 'Approved', 'expected': 'T', 'lesson': 'Impossible - can\'t be approved if unseen'},
+                    {'P': 'Unseen', 'Q': 'Unapproved', 'expected': 'T', 'lesson': 'Retreating to invisibility'}
+                ],
                 'lesson': "Your worth isn't determined by NAND results.",
                 'emotional_payoff': """
 [Nyamu puts down her phone, hands shaking.]
@@ -1080,26 +1135,13 @@ Nyamu: "Without the likes, without the comments, without the validation...
 [For the first time, she has to face herself without the buffer of digital validation.]
 """,
                 'challenge': "Discover identity independent of NAND",
-                'puzzle_type': 'complex',
-                'puzzle_id': 'reflection',
-                'puzzle_data': {
-                    'title': "Self-Discovery",
-                    'reflection': """
-Let S = Nyamu's true self
-S exists independent of P and Q
-
-Truth table of authentic existence:
-
-P (seen) | Q (approved) | NAND | S exists?
-True     | True         | False | Yes (but dependent)
-True     | False        | True  | Yes (but painful)
-False    | True         | True  | Yes (but frustrated)
-False    | False        | True  | Yes (but hidden)
-
-S exists in ALL cases! The NAND result doesn't determine existence,
-only comfort level.
-"""
-                },
+                'puzzle_type': 'truth_table',
+                'puzzle_data': [
+                    {'P': 'Seen', 'Q': 'Approved', 'expected': 'F', 'lesson': 'External validation feels good but is temporary'},
+                    {'P': 'Seen', 'Q': 'Disliked', 'expected': 'T', 'lesson': 'External rejection hurts'},
+                    {'P': 'Unseen', 'Q': 'Approved', 'expected': 'T', 'lesson': 'Can\'t happen'},
+                    {'P': 'Unseen', 'Q': 'Unapproved', 'expected': 'T', 'lesson': 'Here she must find herself'}
+                ],
                 'lesson': "You exist regardless of external validation.",
                 'emotional_payoff': """
 [Nyamu speaks to her reflection, no phone in hand.]
@@ -1223,19 +1265,23 @@ All: "We are Ave Mujica. We are broken. We are healing.
             'reward': """
 ╔══════════════════════════════════════════════════════════════════════╗
 ║                                                                      ║
-║     AVE MUJICA - THE TRUTH BEHIND THE MASQUERADE                    ║
+║     AVE MUJICA - THE TRUTH BEHIND THE MASQUERADE                     ║
 ║                                                                      ║
-║     All songs unlocked with their true meanings:                    ║
-║     • Gehaburn - Burning away false promises                        ║
-║     • Angles - Guardian spirits of connection                       ║
-║     • Imprisoned - Freedom within acceptance                        ║
-║     • Viking - Finding home in the journey                          ║
-║     • Fascination - Self-discovery beyond validation                ║
+║     All 16 songs unlocked:                                           ║
 ║                                                                      ║
-║     "We are not just logical operations.                            ║
-║      We are not just broken girls.                                  ║
-║      We are Ave Mujica.                                             ║
-║      And our truth is whatever we make it."                         ║
+║     • Ave Mujica                 • Symbol I: △ Fire                 ║
+║     • KiLLKiSS                   • Symbol II: 🜁 Air                 ║
+║     • georgette me, georgette you • Symbol III: ▽ Water             ║
+║     • Kuro no Birthday            • Symbol IV: 🜃 Earth              ║
+║     • Sophie                      • Imprisoned XII                   ║
+║     • Crucifix X                  • Octagram Dance                   ║
+║     • Deep Into The Forest        • DIVINE                           ║
+║     • Ether                       • Alter Ego                        ║
+║                                                                      ║
+║     "We are not just logical operations.                             ║
+║      We are not just broken girls.                                   ║
+║      We are Ave Mujica.                                              ║
+║      And our truth is whatever we make it."                          ║
 ║                                                                      ║
 ╚══════════════════════════════════════════════════════════════════════╝
 """,
