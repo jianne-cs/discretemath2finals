@@ -291,11 +291,11 @@ class SongsData:
                 'lyric': "A birthday in darkness, where shadows or light may prevail..."
             },
             {
-                'title': 'Angles',
+                'title': 'Octagram Dance',
                 'operation': 'XNOR',
-                'meaning': 'Angels exist if and only if we believe',
-                'color': '#7A5D5D',
-                'lyric': "Heaven and earth are one and the same..."
+                'meaning': 'The eight-pointed star dances if and only if all steps align',
+                'color': '#C49A6C',  # Golden bronze for the octagram
+                'lyric': "Eight points, one circle, all moving as one...",
             },
             {
                 'title': 'Imprisoned XII',
