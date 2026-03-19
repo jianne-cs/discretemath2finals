@@ -19,21 +19,143 @@ from quest_system import CharacterQuestSystem, WindowManager, UIBuilder, PuzzleM
 
 
 class SectionManager:
-    """Manages scrolling to different sections"""
+    """Manages scrolling to different sections with smooth animation and tracking"""
     
-    def __init__(self, canvas: tk.Canvas):
+    def __init__(self, canvas: tk.Canvas, app=None):
         self.canvas = canvas
+        self.app = app
+        self.section_names = ['Intro', 'Cathedral', 'Characters', '16 Gates']
+        self.section_icons = ['🏰', '⛪', '👥', '🔮']
         self.section_positions = {
             0: 0.0,    # Intro
-            1: 0.2,    # Truth Cathedral
-            2: 0.45,   # Character Encounters
-            3: 0.7     # 16 Gates
+            1: 0.18,   # Truth Cathedral
+            2: 0.40,   # Character Encounters
+            3: 0.65    # 16 Gates
         }
+        self.section_frames = {}
+        self.current_section = 0
+        self.is_scrolling = False
+        self.nav_buttons = {}
     
-    def scroll_to(self, section_id: int) -> None:
-        """Scroll to a specific section"""
-        if section_id in self.section_positions:
+    def register_section(self, section_id: int, frame: tk.Frame) -> None:
+        """Register a section frame for dynamic position tracking"""
+        self.section_frames[section_id] = frame
+    
+    def update_section_positions(self) -> None:
+        """Update section positions based on actual frame positions"""
+        self.canvas.update_idletasks()
+        canvas_height = self.canvas.winfo_height()
+        if canvas_height <= 1:
+            canvas_height = 800
+        
+        for section_id, frame in self.section_frames.items():
+            try:
+                if frame.winfo_exists():
+                    canvas_coords = self.canvas.coords(frame._w)
+                    if canvas_coords:
+                        relative_pos = max(0, canvas_coords[1]) / max(1, self.canvas.bbox("all")[3])
+                        self.section_positions[section_id] = min(1.0, max(0.0, relative_pos))
+            except:
+                pass
+    
+    def scroll_to(self, section_id: int, animate: bool = True) -> None:
+        """Scroll to a specific section with optional animation"""
+        if section_id not in self.section_positions:
+            return
+        
+        self.current_section = section_id
+        self.highlight_active_button(section_id)
+        self._update_section_indicator(section_id)
+        
+        if animate:
+            self._smooth_scroll_to(self.section_positions[section_id])
+        else:
             self.canvas.yview_moveto(self.section_positions[section_id])
+    
+    def _update_section_indicator(self, section_id: int) -> None:
+        """Update the section indicator in the status bar"""
+        if self.app and hasattr(self.app, 'section_indicator'):
+            icon = self.section_icons[section_id]
+            name = self.section_names[section_id]
+            self.app.section_indicator.config(text=f"{icon} {name}")
+    
+    def _smooth_scroll_to(self, target: float) -> None:
+        """Animate smooth scroll to target position"""
+        if self.is_scrolling:
+            return
+        
+        self.is_scrolling = True
+        current = self.canvas.yview()[0]
+        steps = 15
+        step_size = (target - current) / steps
+        
+        def animate(step=0):
+            if step < steps:
+                new_pos = current + (step_size * step)
+                self.canvas.yview_moveto(max(0, min(1, new_pos)))
+                self.canvas.after(15, lambda: animate(step + 1))
+            else:
+                self.canvas.yview_moveto(target)
+                self.is_scrolling = False
+        
+        animate()
+    
+    def scroll_by_delta(self, delta: int) -> None:
+        """Scroll by a relative amount (for keyboard/home/end keys)"""
+        current = self.canvas.yview()[0]
+        scroll_amount = delta * 0.1
+        new_pos = max(0, min(1, current + scroll_amount))
+        self._smooth_scroll_to(new_pos)
+    
+    def scroll_to_top(self) -> None:
+        """Scroll to the top (Intro)"""
+        self.scroll_to(0)
+    
+    def scroll_to_bottom(self) -> None:
+        """Scroll to the bottom (16 Gates)"""
+        self.scroll_to(3)
+    
+    def scroll_to_next(self) -> None:
+        """Scroll to the next section"""
+        next_section = min(3, self.current_section + 1)
+        self.scroll_to(next_section)
+    
+    def scroll_to_prev(self) -> None:
+        """Scroll to the previous section"""
+        prev_section = max(0, self.current_section - 1)
+        self.scroll_to(prev_section)
+    
+    def register_nav_button(self, section_id: int, button: tk.Button) -> None:
+        """Register a navigation button for active highlighting"""
+        self.nav_buttons[section_id] = button
+    
+    def highlight_active_button(self, section_id: int) -> None:
+        """Highlight the active section button"""
+        for sid, btn in self.nav_buttons.items():
+            if sid == section_id:
+                btn.config(bg=COLORS['gold'], fg=COLORS['ebony'], relief='sunken')
+            else:
+                btn.config(bg=COLORS['wine'], fg=COLORS['gold'], relief='raised')
+    
+    def update_scroll_position(self) -> None:
+        """Update current section based on scroll position (for scroll tracking)"""
+        if self.is_scrolling:
+            return
+        
+        current = self.canvas.yview()[0]
+        closest_section = 0
+        min_distance = float('inf')
+        
+        for section_id, pos in self.section_positions.items():
+            distance = abs(current - pos)
+            if distance < min_distance:
+                min_distance = distance
+                closest_section = section_id
+        
+        if closest_section != self.current_section:
+            self.current_section = closest_section
+            self.highlight_active_button(closest_section)
+            self._update_section_indicator(closest_section)
 
 
 class CharacterData:
@@ -792,8 +914,9 @@ class AveMujicaLogicGrimoire:
         self.cards_frame = None
         self.canvas = None
         self.scrollable_frame = None
-        self.section_manager = None
+        self.section_manager = SectionManager(None, app=self)  # Temporary, will be updated
         self.songs_frame = None
+        self.section_indicator = None
         
         # Image storage
         self.intro_image = None
@@ -860,48 +983,125 @@ class AveMujicaLogicGrimoire:
         
         # Victorian status bar
         self.create_victorian_status(main_container)
+        
+        # Setup keyboard navigation
+        self._setup_keyboard_navigation()
+    
+    def _setup_keyboard_navigation(self):
+        """Setup keyboard shortcuts for navigation"""
+        # Number keys 1-4 for section navigation
+        self.root.bind('<Key-1>', lambda e: self.section_manager.scroll_to(0))
+        self.root.bind('<Key-2>', lambda e: self.section_manager.scroll_to(1))
+        self.root.bind('<Key-3>', lambda e: self.section_manager.scroll_to(2))
+        self.root.bind('<Key-4>', lambda e: self.section_manager.scroll_to(3))
+        
+        # Arrow keys for scrolling
+        self.root.bind('<Down>', lambda e: self.section_manager.scroll_by_delta(1))
+        self.root.bind('<Up>', lambda e: self.section_manager.scroll_by_delta(-1))
+        
+        # Home/End keys
+        self.root.bind('<Home>', lambda e: self.section_manager.scroll_to_top())
+        self.root.bind('<End>', lambda e: self.section_manager.scroll_to_bottom())
+        
+        # Page Up/Down
+        self.root.bind('<Prior>', lambda e: self.section_manager.scroll_to_prev())
+        self.root.bind('<Next>', lambda e: self.section_manager.scroll_to_next())
+        
+        # Q for Quest Hub
+        self.root.bind('<Key-q>', lambda e: self.open_quest_hub())
+        self.root.bind('<Key-Q>', lambda e: self.open_quest_hub())
     
     def create_navigation(self, parent):
-        """Create centered navigation bar with reset button"""
+        """Create centered navigation bar with improved styling and functionality"""
         nav_frame = tk.Frame(parent, bg=COLORS['deep_red'], height=70)
         nav_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10))
         nav_frame.grid_propagate(False)
+        
+        # Decorative left border
+        left_border = tk.Frame(nav_frame, bg=COLORS['gold'], width=5)
+        left_border.place(relx=0, rely=0, relheight=1)
+        
+        # Decorative right border
+        right_border = tk.Frame(nav_frame, bg=COLORS['gold'], width=5)
+        right_border.place(relx=1, rely=0, relheight=1, anchor='ne')
         
         # Center navigation buttons
         nav_center = tk.Frame(nav_frame, bg=COLORS['deep_red'])
         nav_center.place(relx=0.5, rely=0.5, anchor='center')
         
-        # Navigation buttons
+        # Navigation buttons with improved styling
         sections = [
-            ("🏰 Intro", 0),
-            ("⛪ Truth Cathedral", 1),
-            ("👥 Character Quests", 2),
-            ("🔮 16 Gates", 3)
+            ("🏰 Intro", 0, "Home / Start Page"),
+            ("⛪ Cathedral", 1, "Learn Logic Operations"),
+            ("👥 Characters", 2, "Character Quests"),
+            ("🔮 16 Gates", 3, "Quiz & Unlock Songs")
         ]
         
-        for text, section_id in sections:
+        self.nav_buttons = {}
+        
+        for text, section_id, tooltip in sections:
             btn = tk.Button(nav_center, text=text,
                 command=lambda s=section_id: self.section_manager.scroll_to(s),
                 bg=COLORS['wine'], fg=COLORS['gold'],
                 font=('Georgia', 11, 'bold'), relief='raised',
-                borderwidth=2, padx=20, pady=8, cursor='hand2')
-            btn.pack(side=tk.LEFT, padx=10)
+                borderwidth=3, padx=18, pady=6, cursor='hand2',
+                activebackground=COLORS['gold'], activeforeground=COLORS['ebony'])
+            btn.pack(side=tk.LEFT, padx=8)
+            
+            # Store button reference for active highlighting
+            self.nav_buttons[section_id] = btn
+            self.section_manager.register_nav_button(section_id, btn)
+            
+            # Tooltip binding
+            self._create_tooltip(btn, tooltip)
         
-        # Quest Hub button
+        # Separator
+        sep_frame = tk.Frame(nav_center, bg=COLORS['gold'], width=3, height=35)
+        sep_frame.pack(side=tk.LEFT, padx=12)
+        sep_frame.pack_propagate(False)
+        
+        # Quest Hub button with special styling
         quest_btn = tk.Button(nav_center, text="🔮 Quest Hub",
             command=self.open_quest_hub,
             bg=COLORS['crimson'], fg=COLORS['gold'],
             font=('Georgia', 11, 'bold'), relief='raised',
-            borderwidth=2, padx=20, pady=8, cursor='hand2')
-        quest_btn.pack(side=tk.LEFT, padx=10)
+            borderwidth=3, padx=18, pady=6, cursor='hand2',
+            activebackground=COLORS['gold'], activeforeground=COLORS['ebony'])
+        quest_btn.pack(side=tk.LEFT, padx=8)
+        self._create_tooltip(quest_btn, "Open Character Quest Selection")
         
-        # Reset button
+        # Reset button with distinct styling
         reset_btn = tk.Button(nav_center, text="⟲ Reset",
                              command=self.open_reset_menu,
-                             bg=COLORS['error_red'], fg=COLORS['gold'],
-                             font=('Georgia', 11, 'bold'), relief='raised',
-                             borderwidth=2, padx=20, pady=8, cursor='hand2')
-        reset_btn.pack(side=tk.LEFT, padx=10)
+                             bg=COLORS['mauve'], fg=COLORS['gold'],
+                             font=('Georgia', 10, 'bold'), relief='raised',
+                             borderwidth=2, padx=15, pady=6, cursor='hand2',
+                             activebackground=COLORS['error_red'], activeforeground=COLORS['gold'])
+        reset_btn.pack(side=tk.LEFT, padx=8)
+        self._create_tooltip(reset_btn, "Reset Progress Options")
+        
+        # Set initial active state
+        self.section_manager.highlight_active_button(0)
+    
+    def _create_tooltip(self, widget, text):
+        """Create a simple tooltip for a widget"""
+        def on_enter(event):
+            tooltip = tk.Toplevel(widget)
+            tooltip.wm_overrideredirect(True)
+            tooltip.wm_geometry(f"+{event.x_root+10}+{event.y_root-25}")
+            label = tk.Label(tooltip, text=text, background=COLORS['gold'],
+                           foreground=COLORS['ebony'], font=('Georgia', 9),
+                           relief='raised', bd=1)
+            label.pack(padx=8, pady=4)
+            widget.tooltip_window = tooltip
+        
+        def on_leave(event):
+            if hasattr(widget, 'tooltip_window'):
+                widget.tooltip_window.destroy()
+                delattr(widget, 'tooltip_window')
+        
+        widget.bind('<Enter>', on_enter)
+        widget.bind('<Leave>', on_leave)
     
     def scroll_to_section(self, section_id):
         """Scroll to a specific section"""
@@ -1030,18 +1230,50 @@ class AveMujicaLogicGrimoire:
         self.canvas.bind('<Configure>', update_canvas_width)
         self.canvas.configure(yscrollcommand=scrollbar.set)
         
-        # Bind mousewheel for scrolling
-        def on_mousewheel(event):
-            self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        # Global scroll function that works anywhere
+        def global_scroll(event):
+            """Scroll the canvas from anywhere on the window"""
+            # Only scroll if mouse is over the main window area
+            x, y = self.root.winfo_pointerxy()
+            widget = self.root.winfo_containing(x, y)
+            
+            # Check if mouse is in the content area (below nav bar, above status bar)
+            if widget:
+                # Scroll the canvas
+                self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+                self.section_manager.update_scroll_position()
         
-        self.canvas.bind_all("<MouseWheel>", on_mousewheel)
+        # Bind scroll to root for global coverage
+        self.root.bind("<MouseWheel>", global_scroll)
+        
+        # Also bind to canvas and scrollable frame
+        def canvas_scroll(event):
+            self.canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+            self.section_manager.update_scroll_position()
+        
+        self.canvas.bind("<MouseWheel>", canvas_scroll)
+        self.scrollable_frame.bind("<MouseWheel>", canvas_scroll)
+        
+        # Linux scroll bindings
+        def linux_scroll_up(event):
+            self.canvas.yview_scroll(-3, "units")
+            self.section_manager.update_scroll_position()
+        
+        def linux_scroll_down(event):
+            self.canvas.yview_scroll(3, "units")
+            self.section_manager.update_scroll_position()
+        
+        self.root.bind("<Button-4>", linux_scroll_up)
+        self.root.bind("<Button-5>", linux_scroll_down)
+        self.canvas.bind("<Button-4>", linux_scroll_up)
+        self.canvas.bind("<Button-5>", linux_scroll_down)
         
         # Grid layout
         self.canvas.grid(row=0, column=0, sticky="nsew")
         scrollbar.grid(row=0, column=1, sticky="ns")
         
-        # Initialize section manager
-        self.section_manager = SectionManager(self.canvas)
+        # Update section manager with canvas reference
+        self.section_manager.canvas = self.canvas
         
         # Create content container
         content_container = tk.Frame(self.scrollable_frame, bg=COLORS['shadow'])
@@ -1274,7 +1506,7 @@ class AveMujicaLogicGrimoire:
                 row += 1
     
     def open_logic_tutorial(self):
-        """Open the comprehensive logic tutorial window"""
+        """Open the comprehensive logic tutorial window with scrolling"""
         tutorial = LogicTutorial.get_tutorial_content()
         
         tutorial_window = tk.Toplevel(self.root)
@@ -1283,55 +1515,211 @@ class AveMujicaLogicGrimoire:
         tutorial_window.transient(self.root)
         tutorial_window.grab_set()
         
-        self.center_window(tutorial_window, 900, 800)
+        self.center_window(tutorial_window, 950, 850)
         
-        # Main frame
-        main_frame = tk.Frame(tutorial_window, bg=COLORS['ebony'])
-        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        # Create scrollable canvas
+        canvas_frame = tk.Frame(tutorial_window, bg=COLORS['ebony'])
+        canvas_frame.pack(fill=tk.BOTH, expand=True)
+        
+        canvas = tk.Canvas(canvas_frame, bg=COLORS['shadow'], highlightthickness=0)
+        scrollbar = ttk.Scrollbar(canvas_frame, orient=tk.VERTICAL, command=canvas.yview)
+        
+        scroll_content = tk.Frame(canvas, bg=COLORS['shadow'])
+        scroll_content.pack(fill=tk.BOTH, expand=True)
+        
+        scroll_content.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas_window = canvas.create_window((0, 0), window=scroll_content, anchor="n", width=900)
+        
+        def on_configure(event):
+            canvas.itemconfig(canvas_window, width=event.width)
+        
+        canvas.bind('<Configure>', on_configure)
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        # Mousewheel scrolling
+        def on_mousewheel(event):
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        canvas.bind_all("<MouseWheel>", on_mousewheel)
+        canvas.bind("<Button-4>", lambda e: canvas.yview_scroll(-3, "units"))
+        canvas.bind("<Button-5>", lambda e: canvas.yview_scroll(3, "units"))
+        
+        canvas.grid(row=0, column=0, sticky="nsew")
+        scrollbar.grid(row=0, column=1, sticky="ns")
+        canvas_frame.grid_rowconfigure(0, weight=1)
+        canvas_frame.grid_columnconfigure(0, weight=1)
         
         # Title
-        tk.Label(main_frame, text=tutorial['title'],
-                font=('Georgia', 18, 'bold'),
-                fg=COLORS['gold'], bg=COLORS['ebony']).pack(pady=10)
+        tk.Label(scroll_content, text=tutorial['title'],
+                font=('Georgia', 22, 'bold'),
+                fg=COLORS['gold'], bg=COLORS['shadow']).pack(pady=15, padx=20)
+        
+        # Quick Nav Buttons
+        nav_frame = tk.Frame(scroll_content, bg=COLORS['deep_red'], bd=3, relief='ridge')
+        nav_frame.pack(fill=tk.X, padx=20, pady=(0, 15))
+        
+        tk.Label(nav_frame, text="⚡ Quick Jump:",
+                fg=COLORS['gold'], bg=COLORS['deep_red'],
+                font=('Georgia', 11, 'bold')).pack(side=tk.LEFT, padx=10)
+        
+        # Section frames dictionary for scrolling - use local var, not instance var
+        tutorial_section_frames = {}
+        
+        # Create section cards first
+        for idx, section in enumerate(tutorial['sections']):
+            section_frame = self._create_tutorial_section_card(scroll_content, section, idx)
+            tutorial_section_frames[section['symbol']] = section_frame
+        
+        # Define scroll function AFTER section cards exist
+        def scroll_to_section(symbol):
+            """Scroll to a specific section by symbol"""
+            canvas.update_idletasks()
+            scrollregion = canvas['scrollregion']
+            if not scrollregion or scrollregion == "":
+                return
+            try:
+                scroll_height = float(scrollregion.split()[-1])
+                frame = tutorial_section_frames.get(symbol)
+                if frame:
+                    frame.update_idletasks()
+                    bbox = canvas.bbox("all")
+                    if bbox:
+                        frame_y = canvas.coords(frame._w)[1]
+                        total_height = bbox[3]
+                        if scroll_height > 0 and total_height > 0:
+                            relative_pos = max(0, frame_y) / total_height
+                            canvas.yview_moveto(min(1.0, relative_pos))
+            except Exception:
+                pass
+        
+        # Create quick jump buttons
+        for section in tutorial['sections']:
+            symbol = section['symbol']
+            btn_text = f"{symbol}"
+            btn = tk.Button(nav_frame, text=btn_text,
+                           command=lambda sym=symbol: scroll_to_section(sym),
+                           bg=COLORS['wine'], fg=COLORS['gold'],
+                           font=('Georgia', 14, 'bold'), width=3,
+                           relief='raised', borderwidth=2, cursor='hand2')
+            btn.pack(side=tk.LEFT, padx=5, pady=8)
+            self._create_tooltip(btn, f"{section['title']}")
         
         # Introduction
-        intro_frame = tk.Frame(main_frame, bg=COLORS['shadow'], bd=2, relief='ridge')
-        intro_frame.pack(fill=tk.X, pady=10)
+        intro_frame = tk.Frame(scroll_content, bg=COLORS['shadow'], bd=3, relief='ridge')
+        intro_frame.pack(fill=tk.X, padx=20, pady=10)
         
-        intro_text = tk.Text(intro_frame, height=6,
+        intro_text = tk.Text(intro_frame, height=8,
                             bg=COLORS['shadow'], fg=COLORS['periwinkle'],
                             font=('Georgia', 10), wrap=tk.WORD,
-                            padx=15, pady=15)
+                            padx=15, pady=15, relief='flat')
         intro_text.pack(fill=tk.X)
         intro_text.insert(tk.END, tutorial['introduction'])
         intro_text.config(state=tk.DISABLED)
         
-        # Create notebook for sections
-        notebook = ttk.Notebook(main_frame)
-        notebook.pack(fill=tk.BOTH, expand=True, pady=10)
-        
-        # Add each section as a tab
-        for section in tutorial['sections']:
-            self._create_tutorial_tab(notebook, section)
-        
         # Tips section
-        tips_frame = tk.Frame(main_frame, bg=COLORS['shadow'], bd=2, relief='ridge')
-        tips_frame.pack(fill=tk.X, pady=10)
+        tips_frame = tk.Frame(scroll_content, bg=COLORS['shadow'], bd=3, relief='ridge')
+        tips_frame.pack(fill=tk.X, padx=20, pady=15)
         
-        tips_text = tk.Text(tips_frame, height=10,
-                           bg=COLORS['shadow'], fg=COLORS['gold'],
+        tk.Label(tips_frame, text="🎓 BEGINNER'S ROADMAP TO MASTERING LOGIC 🎓",
+                font=('Georgia', 16, 'bold'),
+                fg=COLORS['gold'], bg=COLORS['shadow']).pack(pady=10, padx=15)
+        
+        tips_text = tk.Text(tips_frame, height=18,
+                           bg=COLORS['shadow'], fg=COLORS['cream'],
                            font=('Georgia', 10), wrap=tk.WORD,
-                           padx=15, pady=15)
-        tips_text.pack(fill=tk.X)
+                           padx=15, pady=15, relief='flat')
+        tips_text.pack(fill=tk.X, padx=15, pady=(0, 15))
         tips_text.insert(tk.END, tutorial['tips'])
         tips_text.config(state=tk.DISABLED)
         
+        # Quick Reference Card
+        ref_frame = tk.Frame(scroll_content, bg=COLORS['shadow'], bd=3, relief='ridge')
+        ref_frame.pack(fill=tk.X, padx=20, pady=15)
+        
+        tk.Label(ref_frame, text="📋 QUICK REFERENCE CARD 📋",
+                font=('Georgia', 16, 'bold'),
+                fg=COLORS['gold'], bg=COLORS['shadow']).pack(pady=10, padx=15)
+        
+        ref_text = tk.Text(ref_frame, height=12,
+                          bg=COLORS['shadow'], fg=COLORS['cream'],
+                          font=('Georgia', 10), wrap=tk.WORD,
+                          padx=15, pady=15, relief='flat')
+        ref_text.pack(fill=tk.X, padx=15, pady=(0, 15))
+        ref_text.insert(tk.END, tutorial['quick_reference'])
+        ref_text.config(state=tk.DISABLED)
+        
         # Close button
-        tk.Button(main_frame, text="Close Tutorial",
+        btn_frame = tk.Frame(scroll_content, bg=COLORS['shadow'])
+        btn_frame.pack(pady=20)
+        
+        tk.Button(btn_frame, text="✕ Close Tutorial",
                  command=tutorial_window.destroy,
                  bg=COLORS['deep_red'], fg=COLORS['gold'],
-                 font=('Georgia', 11, 'bold'),
-                 padx=20, pady=5, cursor='hand2').pack(pady=10)
+                 font=('Georgia', 12, 'bold'),
+                 relief='raised', borderwidth=3,
+                 padx=30, pady=10, cursor='hand2').pack()
+    
+    def _create_tutorial_section_card(self, parent, section, index):
+        """Create a section card for the tutorial"""
+        colors = ['#3B1A2B', '#2B1A3B', '#1A2B3B', '#3B2B1A', '#1A3B2B', '#2B3B1A', '#3B1A3B', '#1A3B1A']
+        bg_color = colors[index % len(colors)]
+        
+        card = tk.Frame(parent, bg=bg_color, bd=4, relief='ridge')
+        card.pack(fill=tk.X, padx=20, pady=10)
+        
+        # Header
+        header = tk.Frame(card, bg=COLORS['gold'], height=40)
+        header.pack(fill=tk.X)
+        header.pack_propagate(False)
+        
+        tk.Label(header, text=section['title'],
+                font=('Georgia', 14, 'bold'),
+                fg=bg_color, bg=COLORS['gold']).pack(side=tk.LEFT, padx=15)
+        
+        tk.Label(header, text=f"Symbol: {section['symbol']}",
+                font=('Georgia', 12, 'bold'),
+                fg=bg_color, bg=COLORS['gold']).pack(side=tk.RIGHT, padx=15)
+        
+        # Character
+        char_label = tk.Label(card, text=f"🎭 {section['character']}",
+                font=('Georgia', 11, 'italic'),
+                fg=COLORS['periwinkle'], bg=bg_color)
+        char_label.pack(anchor='w', padx=20, pady=(10, 5))
+        
+        # Easy rule
+        rule_label = tk.Label(card, text=f"⚡ Easy Rule: {section['easy_rule']}",
+                font=('Georgia', 11, 'bold'),
+                fg=COLORS['terracotta'], bg=bg_color)
+        rule_label.pack(anchor='w', padx=20, pady=5)
+        
+        # Description
+        desc_frame = tk.Frame(card, bg=COLORS['cream'], bd=2, relief='sunken')
+        desc_frame.pack(fill=tk.X, padx=15, pady=10)
+        
+        desc_text = tk.Text(desc_frame, height=10,
+                           bg=COLORS['cream'], fg=COLORS['deep_red'],
+                           font=('Georgia', 9), wrap=tk.WORD,
+                           padx=12, pady=10, relief='flat')
+        desc_text.pack(fill=tk.X)
+        desc_text.insert(tk.END, section['description'])
+        desc_text.config(state=tk.DISABLED)
+        
+        # Everyday example
+        example_label = tk.Label(card, text=f"💡 {section['everyday_example']}",
+                font=('Georgia', 10, 'italic'),
+                fg=COLORS['gold'], bg=bg_color)
+        example_label.pack(anchor='w', padx=20, pady=(5, 0))
+        
+        # Key example
+        key_example = tk.Label(card, text=f"🔑 {section['example']}",
+                font=('Georgia', 9),
+                fg=COLORS['cream'], bg=bg_color)
+        key_example.pack(anchor='w', padx=20, pady=(0, 10))
+        
+        return card
     
     def _create_tutorial_tab(self, notebook, section):
         """Create a tutorial tab"""
@@ -1788,7 +2176,7 @@ class AveMujicaLogicGrimoire:
                 fg=COLORS['periwinkle'], wraplength=180, justify=tk.CENTER).pack(pady=(2, 5))
 
     def create_victorian_status(self, parent):
-        """Create the status bar"""
+        """Create the status bar with section indicator and keyboard hints"""
         status_bar = tk.Frame(parent, bg=COLORS['deep_red'], height=40)
         status_bar.grid(row=2, column=0, sticky="ew", pady=(10, 0))
         status_bar.grid_propagate(False)
@@ -1796,26 +2184,27 @@ class AveMujicaLogicGrimoire:
         status_center = tk.Frame(status_bar, bg=COLORS['deep_red'])
         status_center.place(relx=0.5, rely=0.5, anchor='center')
         
-        time_str = datetime.now().strftime("⚜  %H:%M  ⚜")
-        tk.Label(status_center, text=time_str,
+        # Section indicator (updates dynamically)
+        self.section_indicator = tk.Label(status_center, text="🏰 Intro",
                 fg=COLORS['gold'], bg=COLORS['deep_red'],
-                font=('Georgia', 9, 'bold')).pack(side=tk.LEFT, padx=10)
+                font=('Georgia', 9, 'bold'))
+        self.section_indicator.pack(side=tk.LEFT, padx=10)
         
+        # Separator
+        tk.Label(status_center, text="|",
+                fg=COLORS['periwinkle'], bg=COLORS['deep_red'],
+                font=('Georgia', 9)).pack(side=tk.LEFT, padx=5)
+        
+        # Progress info
         completed_quests = sum(1 for c in self.quest_system.quest_completed.values() if c)
         unlocked_songs = len(self.unlocked_songs)
-        nav_hint = f"Quests: {completed_quests}/5 Complete | Songs: {unlocked_songs}/16 Unlocked"
+        progress_text = f"Quests: {completed_quests}/5 | Songs: {unlocked_songs}/16"
         
-        tk.Label(status_center, text=nav_hint,
+        tk.Label(status_center, text=progress_text,
                 fg=COLORS['periwinkle'], bg=COLORS['deep_red'],
-                font=('Georgia', 9, 'italic')).pack(side=tk.LEFT, padx=20)
+                font=('Georgia', 9)).pack(side=tk.LEFT, padx=5)
         
-        quotes = [
-            "Sixteen gates, sixteen truths...",
-            "Each character has a story to tell",
-            "Complete quests to unlock deeper meanings",
-            "The masquerade of logic never ends",
-            "Truth wears many masks"
-        ]
-        tk.Label(status_center, text=random.choice(quotes),
-                fg=COLORS['gold'], bg=COLORS['deep_red'],
-                font=('Georgia', 9, 'italic')).pack(side=tk.LEFT, padx=10)
+        # Keyboard hints
+        tk.Label(status_center, text="Keys: 1-4 Navigate | ↑↓ Scroll | Home/End | Q=Quests",
+                fg=COLORS['cream'], bg=COLORS['deep_red'],
+                font=('Georgia', 8)).pack(side=tk.LEFT, padx=15)

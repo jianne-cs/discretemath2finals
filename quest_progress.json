@@ -1,22 +1,24 @@
 {
   "quest_progress": {
     "Sakiko Togawa": 3,
-    "Uika Misumi": 1,
-    "Mutsumi Wakaba": 0,
+    "Uika Misumi": 4,
+    "Mutsumi Wakaba": 4,
     "Umiri Yahata": 4,
     "Nyamu Y\u016btenji": 4
   },
   "quest_completed": {
     "Sakiko Togawa": true,
-    "Uika Misumi": false,
-    "Mutsumi Wakaba": false,
+    "Uika Misumi": true,
+    "Mutsumi Wakaba": true,
     "Umiri Yahata": true,
     "Nyamu Y\u016btenji": true
   },
   "completed_quests": [
-    "Nyamu Y\u016btenji",
+    "Sakiko Togawa",
+    "Uika Misumi",
+    "Mutsumi Wakaba",
     "Umiri Yahata",
-    "Sakiko Togawa"
+    "Nyamu Y\u016btenji"
   ],
   "final_shown": false,
   "window_side": "right"
