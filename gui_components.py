@@ -7,6 +7,8 @@ import random
 from datetime import datetime
 from PIL import Image, ImageTk
 import os
+import pygame
+import threading
 
 from config import COLORS
 from tutorial import LogicTutorial
@@ -15,6 +17,424 @@ from character_quests import (
     UmiriNORQuest, NyamuNANDQuest, AveMujicaFinalQuest
 )
 from quest_system import CharacterQuestSystem, WindowManager, UIBuilder, PuzzleManager, QuestStatus, QuestStatusInfo
+
+
+class MusicPlayer:
+    """Handles music playback with pygame.mixer"""
+    
+    def __init__(self, app):
+        self.app = app
+        self.mixer_initialized = False
+        self.current_track = None
+        self.is_playing = False
+        self.volume = 0.5
+        self.playlist = []
+        self.current_index = 0
+        self.repeat_mode = 'all'
+        self.secret_ending_unlocked = False
+        
+        # Music folder paths
+        self.music_base = "assets/music"
+        self.main_webpage_folder = os.path.join(self.music_base, "main webpage")
+        self.character_quests_folder = os.path.join(self.music_base, "character quests songs")
+        self.gates_folder = os.path.join(self.music_base, "16 gates unlocked songs")
+        self.secret_ending_folder = os.path.join(self.character_quests_folder, "secret ending")
+        
+        # Track unlocked content
+        self.unlocked_character_songs = []
+        self.unlocked_gate_songs = []
+        self.main_webpage_song = None
+        
+        # UI elements
+        self.player_frame = None
+        self.play_btn = None
+        self.next_btn = None
+        self.prev_btn = None
+        self.volume_slider = None
+        self.track_label = None
+        self.status_label = None
+        
+        # Character song mapping (character -> song filename)
+        self.character_song_map = {
+            'Sakiko Togawa': 'Ave Mujica - Masquerade Rhapsody Request.mp3',
+            'Uika Misumi': 'Ave Mujica - Angles (Official Music Video).mp3',
+            'Mutsumi Wakaba': "Ave Mujica - Choir 'S' Choir (Official Music Video).mp3",
+            'Umiri Yahata': "Ave Mujica- 'S' The Way.mp3",
+            'Nyamu Yūtenji': 'Ave Mujica - Blue Eyes.mp3'
+        }
+        
+        # Gate song mapping (operation -> song filename)
+        self.gate_song_map = {
+            'NAND': 'nand - Ave Mujica.mp3',
+            'XOR': 'xor - KiLLKiSS.mp3',
+            'XNOR': 'xor  - Georgette Me, Georgette You.mp3',
+            'OR': 'or - KuroNoBirthday.mp3',
+            'AND': 'and - Sophie.mp3',
+            'Implication': 'implication - Crucifix X.mp3',
+            'NOR': 'nor- ~Deep Into The Forest~.mp3',
+            'Converse Implication': 'converse implication - Symbol I _ △_Fire.mp3',
+            'Negation of P': 'negation of p - Symbol II _ Air.mp3',
+            'Material Nonimplication': 'material nonimplication - Symbol III _ ▽.mp3',
+            'Converse Nonimplication': 'converse nonimplication - Symbol IV _ Earth.mp3',
+            'Contradiction': 'contradiction- Imprisoned XII.mp3',
+            'Tautology': 'Tautology - Octagram Dance.mp3',
+            'Projection Q': 'projection of q - DIVINE.mp3',
+            'Projection P': 'Projection of P- Alter Ego.mp3',
+            'Negation of Q': 'negation of q -Ether.mp3'
+        }
+        
+        self._init_mixer()
+        self._scan_main_song()
+    
+    def _init_mixer(self):
+        """Initialize pygame mixer"""
+        try:
+            if not pygame.mixer.get_init():
+                pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
+            self.mixer_initialized = True
+        except Exception as e:
+            print(f"Failed to initialize audio: {e}")
+            self.mixer_initialized = False
+    
+    def _scan_main_song(self):
+        """Scan for main webpage song"""
+        if os.path.exists(self.main_webpage_folder):
+            for f in os.listdir(self.main_webpage_folder):
+                if f.endswith('.mp3') or f.endswith('.wav'):
+                    self.main_webpage_song = os.path.join(self.main_webpage_folder, f)
+                    break
+    
+    def _get_available_songs(self):
+        """Get list of currently playable songs based on unlock status"""
+        songs = []
+        
+        # Always add main webpage song
+        if self.main_webpage_song:
+            songs.append(self.main_webpage_song)
+        
+        # Add unlocked character songs
+        for song_path in self.unlocked_character_songs:
+            if song_path not in songs:
+                songs.append(song_path)
+        
+        # Add unlocked gate songs
+        for song_path in self.unlocked_gate_songs:
+            if song_path not in songs:
+                songs.append(song_path)
+        
+        # Add secret ending if unlocked
+        if self.secret_ending_unlocked:
+            secret_path = os.path.join(self.secret_ending_folder, "Kamisama Baka.mp3")
+            if os.path.exists(secret_path) and secret_path not in songs:
+                songs.append(secret_path)
+        
+        return songs
+    
+    def _get_track_name(self, path):
+        """Extract track name from file path"""
+        if not path:
+            return "No Track"
+        filename = os.path.basename(path)
+        name = os.path.splitext(filename)[0]
+        # Clean up the name
+        name = name.replace('.mp3', '').replace('.wav', '')
+        if ' - ' in name:
+            parts = name.split(' - ', 1)
+            if len(parts[1]) > 40:
+                return parts[1][:40] + "..."
+            return parts[1]
+        if len(name) > 40:
+            return name[:40] + "..."
+        return name
+    
+    def play(self):
+        """Play music"""
+        if not self.mixer_initialized:
+            return
+        
+        self.playlist = self._get_available_songs()
+        if not self.playlist:
+            self._update_status("No songs available")
+            return
+        
+        if self.current_index >= len(self.playlist):
+            self.current_index = 0
+        
+        self._play_track(self.playlist[self.current_index])
+    
+    def _play_track(self, track_path):
+        """Play a specific track"""
+        if not track_path or not os.path.exists(track_path):
+            return
+        
+        try:
+            pygame.mixer.music.load(track_path)
+            pygame.mixer.music.set_volume(self.volume)
+            pygame.mixer.music.play()
+            self.current_track = track_path
+            self.is_playing = True
+            self._update_ui()
+            self._update_status("Now Playing")
+            
+            # Set up end event detection
+            self._check_music_end()
+        except Exception as e:
+            print(f"Error playing track: {e}")
+    
+    def _check_music_end(self):
+        """Check if music has ended and play next"""
+        def check():
+            while self.is_playing:
+                if not pygame.mixer.music.get_busy() and self.is_playing:
+                    self.next()
+                    break
+                import time
+                time.sleep(0.5)
+        
+        if not hasattr(self, '_check_thread') or not self._check_thread.is_alive():
+            self._check_thread = threading.Thread(target=check, daemon=True)
+            self._check_thread.start()
+    
+    def pause(self):
+        """Pause music"""
+        if self.mixer_initialized and pygame.mixer.music.get_busy():
+            pygame.mixer.music.pause()
+            self.is_playing = False
+            self._update_status("Paused")
+            self._update_ui()
+    
+    def resume(self):
+        """Resume music"""
+        if self.mixer_initialized:
+            pygame.mixer.music.unpause()
+            self.is_playing = True
+            self._update_status("Now Playing")
+            self._update_ui()
+            self._check_music_end()
+    
+    def next(self):
+        """Play next track"""
+        if not self.playlist:
+            return
+        
+        self.current_index = (self.current_index + 1) % len(self.playlist)
+        self._play_track(self.playlist[self.current_index])
+    
+    def previous(self):
+        """Play previous track"""
+        if not self.playlist:
+            return
+        
+        self.current_index = (self.current_index - 1) % len(self.playlist)
+        self._play_track(self.playlist[self.current_index])
+    
+    def set_volume(self, vol):
+        """Set volume (0.0 to 1.0)"""
+        self.volume = vol
+        if self.mixer_initialized:
+            pygame.mixer.music.set_volume(vol)
+    
+    def toggle_play(self):
+        """Toggle play/pause"""
+        if not self.mixer_initialized:
+            self._update_status("Audio unavailable")
+            return
+        
+        if self.is_playing:
+            self.pause()
+        else:
+            if pygame.mixer.music.get_busy():
+                self.resume()
+            else:
+                self.play()
+    
+    def unlock_character_song(self, character):
+        """Unlock a character quest song"""
+        print(f"Trying to unlock song for {character}")
+        if character in self.character_song_map:
+            song_filename = self.character_song_map[character]
+            song_path = os.path.join(self.character_quests_folder, song_filename)
+            print(f"Song path: {song_path}")
+            print(f"Folder exists: {os.path.exists(self.character_quests_folder)}")
+            print(f"Song file exists: {os.path.exists(song_path)}")
+            if os.path.exists(song_path) and song_path not in self.unlocked_character_songs:
+                self.unlocked_character_songs.append(song_path)
+                print(f"Unlocked character song: {song_filename}")
+                self._refresh_playlist()
+                self._notify_new_song(song_filename)
+            else:
+                print(f"Song not found or already unlocked: {song_path}")
+    
+    def unlock_gate_song(self, operation):
+        """Unlock a gate song when puzzle is completed"""
+        if operation in self.gate_song_map:
+            song_filename = self.gate_song_map[operation]
+            song_path = os.path.join(self.gates_folder, song_filename)
+            if os.path.exists(song_path) and song_path not in self.unlocked_gate_songs:
+                self.unlocked_gate_songs.append(song_path)
+                print(f"Unlocked gate song: {song_filename}")
+                self._refresh_playlist()
+                self._notify_new_song(song_filename)
+    
+    def unlock_secret_ending(self):
+        """Unlock the secret ending song"""
+        self.secret_ending_unlocked = True
+        print("Secret ending unlocked!")
+        self._refresh_playlist()
+        self._notify_new_song("Kamisama Baka (Secret Ending)")
+    
+    def _refresh_playlist(self):
+        """Refresh the playlist with current unlocked songs"""
+        self.playlist = self._get_available_songs()
+        print(f"Playlist refreshed: {len(self.playlist)} songs available")
+    
+    def _notify_new_song(self, song_name):
+        """Update UI to show new song available"""
+        self._update_status(f"🎵 New: {song_name[:30]}...")
+        self._update_ui()
+        self._update_locked_indicator()
+    
+    def reset_character_songs(self):
+        """Reset all character songs"""
+        self.unlocked_character_songs = []
+    
+    def reset_gate_songs(self):
+        """Reset all gate songs"""
+        self.unlocked_gate_songs = []
+    
+    def reset_secret_ending(self):
+        """Reset secret ending"""
+        self.secret_ending_unlocked = False
+    
+    def _update_status(self, status):
+        """Update status label"""
+        if self.status_label:
+            try:
+                self.status_label.config(text=status)
+            except:
+                pass
+    
+    def _update_ui(self):
+        """Update player UI"""
+        if self.play_btn:
+            try:
+                if self.is_playing:
+                    self.play_btn.config(text="⏸")
+                else:
+                    self.play_btn.config(text="▶")
+            except:
+                pass
+        
+        if self.track_label:
+            try:
+                self.track_label.config(text=self._get_track_name(self.current_track))
+            except:
+                pass
+    
+    def create_player_ui(self, parent):
+        """Create the music player UI at the bottom of the window"""
+        # Player at bottom
+        self.player_frame = tk.Frame(parent, bg=COLORS['shadow'], height=50)
+        self.player_frame.pack(fill=tk.X, side=tk.BOTTOM)
+        self.player_frame.pack_propagate(False)
+        
+        # Top border
+        tk.Frame(self.player_frame, bg=COLORS['gold'], height=2).pack(fill=tk.X)
+        
+        # Player content
+        player_inner = tk.Frame(self.player_frame, bg=COLORS['shadow'])
+        player_inner.pack(fill=tk.X, padx=10, pady=5)
+        
+        # Track info (left)
+        info_frame = tk.Frame(player_inner, bg=COLORS['shadow'])
+        info_frame.pack(side=tk.LEFT, fill=tk.Y, padx=5)
+        
+        self.track_label = tk.Label(info_frame, text="No Track",
+                                    font=('Georgia', 9),
+                                    fg=COLORS['gold'], bg=COLORS['shadow'],
+                                    anchor='w')
+        self.track_label.pack(side=tk.LEFT)
+        
+        self.status_label = tk.Label(info_frame, text="▶ Ready",
+                                     font=('Georgia', 8),
+                                     fg=COLORS['periwinkle'], bg=COLORS['shadow'])
+        self.status_label.pack(side=tk.LEFT, padx=10)
+        
+        # Controls (center)
+        controls_frame = tk.Frame(player_inner, bg=COLORS['shadow'])
+        controls_frame.pack(side=tk.LEFT, expand=True)
+        
+        self.prev_btn = tk.Button(controls_frame, text="⏮",
+                                  command=self.previous,
+                                  bg=COLORS['shadow'], fg=COLORS['gold'],
+                                  font=('Georgia', 12), bd=0,
+                                  cursor='hand2', width=3)
+        self.prev_btn.pack(side=tk.LEFT, padx=2)
+        
+        self.play_btn = tk.Button(controls_frame, text="▶",
+                                  command=self.toggle_play,
+                                  bg=COLORS['deep_red'], fg=COLORS['gold'],
+                                  font=('Georgia', 14, 'bold'), bd=0,
+                                  cursor='hand2', width=4)
+        self.play_btn.pack(side=tk.LEFT, padx=5)
+        
+        self.next_btn = tk.Button(controls_frame, text="⏭",
+                                  command=self.next,
+                                  bg=COLORS['shadow'], fg=COLORS['gold'],
+                                  font=('Georgia', 12), bd=0,
+                                  cursor='hand2', width=3)
+        self.next_btn.pack(side=tk.LEFT, padx=2)
+        
+        # Volume (right)
+        volume_frame = tk.Frame(player_inner, bg=COLORS['shadow'])
+        volume_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=5)
+        
+        tk.Label(volume_frame, text="🔊",
+                 bg=COLORS['shadow'], fg=COLORS['gold']).pack(side=tk.LEFT)
+        
+        self.volume_slider = tk.Scale(volume_frame, from_=0, to=100,
+                                      orient=tk.HORIZONTAL, length=100,
+                                      command=lambda v: self.set_volume(float(v)/100),
+                                      bg=COLORS['shadow'], fg=COLORS['gold'],
+                                      highlightthickness=0, troughcolor=COLORS['gold'],
+                                      sliderrelief='flat')
+        self.volume_slider.set(int(self.volume * 100))
+        self.volume_slider.pack(side=tk.LEFT, padx=5)
+        
+        # Locked indicator
+        self.locked_label = tk.Label(volume_frame, text="🔒",
+                                     bg=COLORS['shadow'], fg=COLORS['dark_purple'])
+        self.locked_label.pack(side=tk.LEFT, padx=5)
+        
+        self._update_locked_indicator()
+    
+    def _update_locked_indicator(self):
+        """Update the locked indicator based on unlocked songs"""
+        if self.locked_label:
+            try:
+                total_unlocked = len(self.unlocked_character_songs) + len(self.unlocked_gate_songs)
+                if self.secret_ending_unlocked:
+                    total_unlocked += 1
+                    self.locked_label.config(text="✨", fg=COLORS['gold'])
+                elif total_unlocked == 0:
+                    self.locked_label.config(text="🔒", fg=COLORS['dark_purple'])
+                else:
+                    self.locked_label.config(text=f"🔓 {total_unlocked}", fg=COLORS['success_green'])
+            except:
+                pass
+        
+        # Schedule next update
+        if hasattr(self, 'player_frame') and self.player_frame:
+            self.player_frame.after(2000, self._update_locked_indicator)
+    
+    def get_unlocked_count(self):
+        """Get count of unlocked songs"""
+        return {
+            'character': len(self.unlocked_character_songs),
+            'gate': len(self.unlocked_gate_songs),
+            'secret': 1 if self.secret_ending_unlocked else 0,
+            'total': len(self.unlocked_character_songs) + len(self.unlocked_gate_songs) + (1 if self.secret_ending_unlocked else 0)
+        }
 
 
 
@@ -731,6 +1151,10 @@ class QuizManager:
         if song and song not in self.parent.unlocked_songs:
             self.parent.unlocked_songs.append(song)
             self.parent.update_songs_display()
+            
+            # Also unlock in music player
+            if hasattr(self.parent, 'music_player'):
+                self.parent.music_player.unlock_gate_song(current_op['name'])
         
         if self.status_icon:
             self.status_icon.config(text="✓✓✓ VERITAS ✓✓✓", fg=COLORS['correct_gold'], bg=COLORS['ebony'])
@@ -806,6 +1230,10 @@ class QuizManager:
             self.parent.unlocked_songs = []
             self.answer_submitted = False
             
+            # Reset music player gate songs
+            if hasattr(self.parent, 'music_player'):
+                self.parent.music_player.reset_gate_songs()
+            
             # Reshuffle operations
             self.shuffle_operations()
             
@@ -869,10 +1297,13 @@ class AveMujicaLogicGrimoire:
     def __init__(self, root):
         self.root = root
         self.root.title("Ave Mujica - The Complete Logic Grimoire")
-        self.root.geometry("1400x1000")
+        
+        # Responsive window settings
+        self.root.geometry("1600x1000")  # Initial size (larger)
+        self.root.minsize(1200, 800)    # Minimum size
         self.root.configure(bg=COLORS['shadow'])
         
-        # Make window responsive
+        # Make window resizable
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
         
@@ -883,6 +1314,7 @@ class AveMujicaLogicGrimoire:
         self.logical_operations = LogicalOperationsData()
         self.ave_mujica_songs = SongsData()
         self.quiz_manager = QuizManager(self)
+        self.music_player = MusicPlayer(self)
         
         # Initialize font families
         self.available_fonts = list(font.families())
@@ -969,19 +1401,21 @@ class AveMujicaLogicGrimoire:
     def create_main_website(self):
         """Create the main website with all sections"""
         
-        # Main container
+        # Main container using pack (simpler for this layout)
         main_container = tk.Frame(self.root, bg=COLORS['ebony'])
-        main_container.grid(row=0, column=0, sticky="nsew")
-        main_container.grid_rowconfigure(1, weight=1)
-        main_container.grid_columnconfigure(0, weight=1)
+        main_container.pack(fill=tk.BOTH, expand=True)
         
-        # Navigation bar
+        # Navigation bar (top)
         self.create_navigation(main_container)
         
-        # Main content area with scrollable canvas
+        # Main content area with scrollable canvas (middle, expands)
         self.create_scrollable_content(main_container)
         
-        # Victorian status bar
+        # Music player (bottom)
+        self.music_player.create_player_ui(main_container)
+        self.music_player.play()
+        
+        # Victorian status bar (above music player)
         self.create_victorian_status(main_container)
         
         # Setup keyboard navigation
@@ -1014,8 +1448,8 @@ class AveMujicaLogicGrimoire:
     def create_navigation(self, parent):
         """Create centered navigation bar with improved styling and functionality"""
         nav_frame = tk.Frame(parent, bg=COLORS['deep_red'], height=70)
-        nav_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10))
-        nav_frame.grid_propagate(False)
+        nav_frame.pack(fill=tk.X, pady=(0, 5))
+        nav_frame.pack_propagate(False)
         
         # Decorative left border
         left_border = tk.Frame(nav_frame, bg=COLORS['gold'], width=5)
@@ -1203,9 +1637,7 @@ class AveMujicaLogicGrimoire:
         
         # Create canvas and scrollbar
         canvas_frame = tk.Frame(parent, bg=COLORS['shadow'])
-        canvas_frame.grid(row=1, column=0, sticky="nsew")
-        canvas_frame.grid_rowconfigure(0, weight=1)
-        canvas_frame.grid_columnconfigure(0, weight=1)
+        canvas_frame.pack(fill=tk.BOTH, expand=True)
         
         self.canvas = tk.Canvas(canvas_frame, bg=COLORS['shadow'], highlightthickness=0)
         scrollbar = ttk.Scrollbar(canvas_frame, orient=tk.VERTICAL, command=self.canvas.yview)
@@ -1268,9 +1700,9 @@ class AveMujicaLogicGrimoire:
         self.canvas.bind("<Button-4>", linux_scroll_up)
         self.canvas.bind("<Button-5>", linux_scroll_down)
         
-        # Grid layout
-        self.canvas.grid(row=0, column=0, sticky="nsew")
-        scrollbar.grid(row=0, column=1, sticky="ns")
+        # Pack layout for canvas and scrollbar
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         
         # Update section manager with canvas reference
         self.section_manager.canvas = self.canvas
@@ -2177,9 +2609,9 @@ class AveMujicaLogicGrimoire:
 
     def create_victorian_status(self, parent):
         """Create the status bar with section indicator and keyboard hints"""
-        status_bar = tk.Frame(parent, bg=COLORS['deep_red'], height=40)
-        status_bar.grid(row=2, column=0, sticky="ew", pady=(10, 0))
-        status_bar.grid_propagate(False)
+        status_bar = tk.Frame(parent, bg=COLORS['deep_red'], height=35)
+        status_bar.pack(fill=tk.X, side=tk.BOTTOM)
+        status_bar.pack_propagate(False)
         
         status_center = tk.Frame(status_bar, bg=COLORS['deep_red'])
         status_center.place(relx=0.5, rely=0.5, anchor='center')

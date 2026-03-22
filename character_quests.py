@@ -203,7 +203,7 @@ Sakiko: "Implication taught me that truth isn't about avoiding falsehoods.
          It's about being honest about what follows from who we really are."
 """,
             'reward': "Oblivionis' Gratitude + Implication Mastery",
-            'unlock_song': "Gehaburn - The fire that burns away false promises"
+            'unlock_song': "Masquerade Rhapsody Request"
         }
 
 
@@ -390,7 +390,7 @@ Uika: "The island is gone. The waves still crash, but now they're not
  love, all coexisting in the music.]
 """,
             'reward': "Doloris' Liberation + XOR Mastery",
-            'unlock_song': "Angles - Guardian spirits who watch over many"
+            'unlock_song': "Angles"
         }
 
 
@@ -585,203 +585,10 @@ Mutsumi: "Negation taught me that who I'm NOT helps define who I AM.
  whole and authentic for the first time.]
 """,
             'reward': "Mortis' Integration + Negation Mastery",
-            'unlock_song': "Imprisoned - Freedom found within acceptance"
+            'unlock_song': "Choir 'S' Choir"
         }
 
-class MutsumiNegationQuest(BaseQuest):
-    """Mutsumi Wakaba (Mortis) - Negation Quest"""
-    
-    @property
-    def quest_name(self) -> str: return "The Face Behind the Mask"
-    @property
-    def character(self) -> str: return "Mutsumi Wakaba"
-    @property
-    def role(self) -> str: return "Mortis"
-    @property
-    def operation(self) -> str: return "Negation (¬)"
-    @property
-    def symbol(self) -> str: return "¬"
-    
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.stage_count = 4
-    
-    def get_stage_data(self, stage: int) -> Dict[str, Any]:
-        stages = {
-            0: {
-                'title': "Born on Stage",
-                'scene': "childhood_memory",
-                'dialogue': """
-[SCENE: Young Mutsumi watches her mother perform, the audience enraptured.]
 
-Mother: "Mutsumi, you'll be a natural! You have my genes!"
-
-[Cameras flash. Reporters swarm.]
-
-Young Mutsumi: "But what if I'm NOT you? What if I'm just me?"
-
-[The world expects another Minami. Every "be like your mother"
- is an erasure of herself.]
-
-Young Mutsumi: "If I'm not my mother, then who am I? 
-                 ¬Mother = ? The equation has no answer."
-""",
-                'challenge': "Understand identity negation",
-                'puzzle_type': 'truth_table',
-                'puzzle_data': [
-                    {'P': 'Is her mother', 'Q': 'Is an actress', 'expected': 'F', 'lesson': 'She is NOT her mother - negation is true'},
-                    {'P': 'Is her mother', 'Q': 'Is a musician', 'expected': 'F', 'lesson': 'She is NOT her mother, even as a musician'},
-                    {'P': 'Is Mutsumi', 'Q': 'Is herself', 'expected': 'T', 'lesson': 'She IS Mutsumi - this is true'},
-                    {'P': 'Is Mortis', 'Q': 'Is shadow', 'expected': 'F', 'lesson': 'Mortis is not yet born'}
-                ],
-                'lesson': "Negation of expectation creates space for true self, but also uncertainty.",
-                'emotional_payoff': """
-Young Mutsumi: "Every time I'm NOT my mother, I feel guilty.
-                 But maybe... maybe ¬Mother doesn't mean failure.
-                 Maybe it means I'm allowed to be someone else."
-""",
-                'reward': "Mother's Old Script (Blank Pages)"
-            },
-            1: {
-                'title': "The Guitar's Voice",
-                'scene': "crychic_days",
-                'dialogue': """
-[SCENE: Mutsumi holds her guitar - the one thing that's truly hers.]
-
-Mutsumi: "With Sakiko, with CRYCHIC, I could just play.
-          I was NOT an actress. I was NOT a daughter.
-          I was just... Mutsumi. The negation felt like freedom."
-
-[She strums a chord, smiling.]
-
-Mutsumi: "When I play, I negate everything else.
-          The music is my ¬world. ¬my mother. ¬my duty."
-
-[But even in freedom, shadows lurked. The world still saw
- Minami's daughter playing pretend.]
-""",
-                'challenge': "Explore negation as liberation",
-                'puzzle_type': 'truth_table',
-                'puzzle_data': [
-                    {'P': 'Is acting', 'Q': 'Is playing music', 'expected': 'F', 'lesson': 'When playing, she is NOT acting'},
-                    {'P': 'Is being daughter', 'Q': 'Is being herself', 'expected': 'T', 'lesson': 'She can be daughter AND herself'},
-                    {'P': 'Is free', 'Q': 'Is expected', 'expected': 'T', 'lesson': 'Freedom is true, expectations are false'},
-                    {'P': 'Is Mutsumi', 'Q': 'Is Minami\'s daughter', 'expected': 'T', 'lesson': 'She is both, but one is true self'}
-                ],
-                'lesson': "Negation can create space for authentic identity, but society may not recognize it.",
-                'emotional_payoff': """
-Mutsumi: "When I play, I'm not anyone's daughter, not anyone's actress.
-          I'm just... me. But as soon as the music stops, the negations end,
-          and the expectations rush back in."
-""",
-                'reward': "Guitar Pick (Worn Smooth)"
-            },
-            2: {
-                'title': "The Birth of Mortis",
-                'scene': "breaking_point",
-                'dialogue': """
-[SCENE: The breaking point. Sakiko's harsh words echo. The pressure mounts.]
-
-Sakiko: "You're not trying hard enough! You're just coasting on your mother's name!"
-
-Mutsumi: "I can't... I can't be what anyone wants..."
-
-[Something cracks. The air grows cold. A new voice emerges.]
-
-Mortis: "She couldn't be what you wanted. So I am what she is NOT.
-         I am the negation made flesh. I am everything Mutsumi cannot be.
-         You want an actress? I'll give you a performance.
-         You want a daughter? I'll give you obedience.
-         You want anything? I'll be its opposite."
-
-[The stage darkens as Mortis takes control - a being born entirely
- from the negation of Mutsumi's true self.]
-""",
-                'challenge': "Understand destructive negation",
-                'puzzle_type': 'truth_table',
-                'puzzle_data': [
-                    {'P': 'Mutsumi is present', 'Q': 'Mortis is present', 'expected': 'F', 'lesson': 'They cannot both be present at once'},
-                    {'P': 'Mutsumi is present', 'Q': 'Mortis is absent', 'expected': 'T', 'lesson': 'Mutsumi alone - vulnerable'},
-                    {'P': 'Mutsumi is absent', 'Q': 'Mortis is present', 'expected': 'T', 'lesson': 'Mortis takes over - protective but destructive'},
-                    {'P': 'Mutsumi is absent', 'Q': 'Mortis is absent', 'expected': 'F', 'lesson': 'Neither exists - annihilation'}
-                ],
-                'lesson': "When the self is constantly negated, only the negation remains.",
-                'emotional_payoff': """
-Mortis: "I am what happens when you negate someone too much.
-         I am the shadow that grows when the light is denied.
-         But even shadows... want to be real."
-""",
-                'reward': "Broken Mirror Shard"
-            },
-            3: {
-                'title': "The Integration",
-                'scene': "hall_of_mirrors",
-                'dialogue': """
-[SCENE: Mutsumi and Mortis face each other in a hall of mirrors.
- Infinite reflections stretch in all directions.]
-
-Mutsumi: "You are me."
-Mortis: "I am NOT you."
-Mutsumi: "But ¬Mortis = Mutsumi."
-Mortis: "And ¬Mutsumi = Mortis."
-
-[They realize - negation creates a duality, but also a connection.
- They are two sides of the same coin, defined by each other's absence.]
-
-Mutsumi: "We're not opposites. We're... complements."
-Mortis: "Like day and night. Light and shadow. You can't have one without the other."
-""",
-                'challenge': "Understand that negation creates relationship, not just opposition",
-                'puzzle_type': 'truth_table',
-                'puzzle_data': [
-                    {'P': 'Mutsumi is acknowledged', 'Q': 'Mortis is acknowledged', 'expected': 'T', 'lesson': 'Both acknowledged - integration'},
-                    {'P': 'Mutsumi is acknowledged', 'Q': 'Mortis is denied', 'expected': 'F', 'lesson': 'Denying shadow leads to imbalance'},
-                    {'P': 'Mutsumi is denied', 'Q': 'Mortis is acknowledged', 'expected': 'F', 'lesson': 'Denying self leads to loss'},
-                    {'P': 'Mutsumi is denied', 'Q': 'Mortis is denied', 'expected': 'F', 'lesson': 'Denying both leads to nothing'}
-                ],
-                'lesson': "Both selves can coexist when acknowledged, not negated.",
-                'emotional_payoff': """
-[Mutsumi reaches out. Mortis takes her hand.]
-
-Mutsumi: "I don't have to kill you to be me."
-Mortis: "And I don't have to erase you to exist."
-
-[They merge - not into one, but into understanding.]
-""",
-                'reward': "Two Halves of One Heart"
-            }
-        }
-        return stages.get(stage, stages[0])
-    
-    def get_finale(self) -> Dict[str, Any]:
-        return {
-            'title': "Playing as One",
-            'scene': "unity",
-            'dialogue': """
-[SCENE: Mutsumi takes the stage, guitar in hand. For the first time,
- both she and Mortis play together - two hands on one instrument,
- two souls in one body, two truths in one person.]
-
-Mutsumi: "I am NOT just my mother's daughter."
-Mortis: "I am NOT just Mutsumi's shadow."
-
-Together: "We ARE. And that's enough."
-
-[The music they create is unlike anything before - it contains
- both the gentle melody of Mutsumi and the powerful chords of Mortis,
- proving that negation doesn't have to mean destruction.]
-
-Mutsumi: "Negation taught me that who I'm NOT helps define who I AM.
-          Mortis taught me that even shadows have a place in the light.
-          Together, we're not broken - we're complete."
-
-[The audience doesn't see two people. They see one musician,
- whole and authentic for the first time.]
-""",
-            'reward': "Mortis' Integration + Negation Mastery",
-            'unlock_song': "Imprisoned - Freedom found within acceptance"
-        }
-    
 class UmiriNORQuest(BaseQuest):
     """Umiri Yahata (Timoris) - NOR Quest"""
     
@@ -978,7 +785,7 @@ Umiri: "I'm not reliable because I'm everywhere.
  but as a member, a friend, a home.]
 """,
             'reward': "Timoris' Trust + NOR Mastery",
-            'unlock_song': "Viking - The journey of finding home"
+            'unlock_song': "'S/' The Way"
         }
 
 
@@ -1184,7 +991,7 @@ Fan: "That was amazing! You looked so... alive up there!"
 Nyamu: "I am alive. Finally, truly alive."
 """,
             'reward': "Amoris' Authenticity + NAND Mastery",
-            'unlock_song': "Fascination - Self-discovery beyond validation"
+            'unlock_song': "Blue Eyes"
         }
 
 
@@ -1265,25 +1072,53 @@ All: "We are Ave Mujica. We are broken. We are healing.
             'reward': """
 ╔══════════════════════════════════════════════════════════════════════╗
 ║                                                                      ║
-║     AVE MUJICA - THE TRUTH BEHIND THE MASQUERADE                     ║
+║     AVE MUJICA - THE TRUTH BEYOND THE MASQUERADE                     ║
 ║                                                                      ║
-║     All 16 songs unlocked:                                           ║
+║     All 5 Character Quests Complete!                                 ║
 ║                                                                      ║
-║     • Ave Mujica                 • Symbol I: △ Fire                 ║
-║     • KiLLKiSS                   • Symbol II: 🜁 Air                 ║
-║     • georgette me, georgette you • Symbol III: ▽ Water             ║
-║     • Kuro no Birthday            • Symbol IV: 🜃 Earth              ║
-║     • Sophie                      • Imprisoned XII                   ║
-║     • Crucifix X                  • Octagram Dance                   ║
-║     • Deep Into The Forest        • DIVINE                           ║
-║     • Ether                       • Alter Ego                        ║
+║     [SCENE: The five stand together, no masks, no lies, no fear.]   ║
 ║                                                                      ║
-║     "We are not just logical operations.                             ║
-║      We are not just broken girls.                                   ║
-║      We are Ave Mujica.                                              ║
-║      And our truth is whatever we make it."                          ║
+║     Sakiko: "We thought logic was the answer. But logic alone      ║
+║              couldn't heal us."                                      ║
+║                                                                      ║
+║     Uika: "XOR said we had to choose. But love doesn't have to      ║
+║            be exclusive to be true."                                 ║
+║                                                                      ║
+║     Mutsumi: "Negation taught us what we're NOT. But finding       ║
+║               what we ARE was the real journey."                     ║
+║                                                                      ║
+║     Umiri: "NOR kept us safe from hurt. But being safe            ║
+║             also meant being alone."                                 ║
+║                                                                      ║
+║     Nyamu: "NAND made us chase approval. But the only            ║
+║            approval we needed was our own."                          ║
+║                                                                      ║
+║     [They play one final song together - not about escaping       ║
+║      their voids, but about filling them with each other.]          ║
+║                                                                      ║
+║     "We are Ave Mujica. Not because we're broken.                 ║
+║      But because we chose to heal together."                          ║
+║                                                                      ║
+║     ✨✨✨ SECRET ACHIEVEMENT UNLOCKED ✨✨✨                         ║
+║     "Truth Seeker" - Discover the ending beyond the masquerade      ║
 ║                                                                      ║
 ╚══════════════════════════════════════════════════════════════════════╝
+
+ALL 16 SONGS UNLOCKED:
+• Ave Mujica                 • Symbol I: △ Fire
+• KiLLKiSS                   • Symbol II: 🜁 Air
+• georgette me, georgette you • Symbol III: ▽ Water
+• Kuro no Birthday            • Symbol IV: 🜃 Earth
+• Sophie                      • Imprisoned XII
+• Crucifix X                  • Octagram Dance
+• Deep Into The Forest        • DIVINE
+• Ether                       • Alter Ego
+
+"We are not just logical operations.
+ We are not just broken girls.
+ We are Ave Mujica.
+ And our truth is whatever we make it."
 """,
-            'unlock_all': True
+            'unlock_all': True,
+            'secret_ending': True
         }
